@@ -1,5 +1,6 @@
-# Created by https://www.gitignore.io/api/python,node
-# Edit at https://www.gitignore.io/?templates=python,node
+
+# Created by https://www.gitignore.io/api/python,venv,node
+# Edit at https://www.gitignore.io/?templates=python,venv,node
 
 ### Node ###
 # Logs
@@ -79,7 +80,7 @@ typings/
 # nuxt.js build output
 .nuxt
 
-# react / gatsby
+# react / gatsby 
 public/
 
 # vuepress build output
@@ -198,4 +199,22 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# End of https://www.gitignore.io/api/python,node
+### venv ###
+# Virtualenv
+# http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
+[Bb]in
+[Ii]nclude
+[Ll]ib
+[Ll]ib64
+[Ll]ocal
+[Ss]cripts
+pyvenv.cfg
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+pip-selfcheck.json
+
+# End of https://www.gitignore.io/api/python,venv,node
