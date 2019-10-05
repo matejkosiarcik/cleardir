@@ -64,7 +64,11 @@ def main(argv: Iterable[str]):
 
 # Process single directory
 def process_dir(dir: str, dry_run: bool):
-    log('Searching in', dir)
+    if not os.path.exists(dir):
+        print('Could not find "%s"' % dir, file=sys.stderr)
+        return
+
+    log('Processing "%s"' % dir)
 
     has_dot_clean = False
     try:
@@ -78,7 +82,6 @@ def process_dir(dir: str, dry_run: bool):
         subprocess.check_call(['dot_clean', '-m', dir])
 
     command = find_command(dir, not has_dot_clean or dry_run)
-    print(command)
 
     process = subprocess.Popen(command,
                                stdout=subprocess.PIPE)
@@ -87,47 +90,54 @@ def process_dir(dir: str, dry_run: bool):
         if dry_run:
             print(file)
         else:
-            log('Deleting', file)
-            delete(file)
+            try:
+                delete(file)
+                log('Deleted "%s"' % file)
+            except FileNotFoundError:
+                log('Skipping "%s"' % file)
+                pass
     process.communicate()
 
 
-# deletes file/folder/symlink from filesystem
+# deletes file(or folder/symlink) from filesystem
 def delete(entry: str):
-    subprocess.check_call(['rm', '-rf', entry])
+    if os.path.exists(entry):
+        subprocess.check_call(['rm', '-rf', entry])
+    else:
+        raise FileNotFoundError("file: %s exists" % entry)
 
 
 # creates complete "find" command to run
 def find_command(dir: str, include_underbar_files: bool) -> Iterable[str]:
     command = ['find', '-L', dir] + files_for_find()
     if include_underbar_files:
-        command += ['-or', '-name', '._*', '-type', 'f']
+        command += ['-or', '-name', "'._*'", '-type', 'f']
     return command
 
 
 # returns generic list of files to add to "find" command
 def files_for_find() -> Iterable[str]:
     files = [
-        ['-name', '.DS_Store'],  # mac
-        ['-name', '.localized'],  # mac
-        ['-name', 'CMakeCache.txt'],  # cmake
+        '.DS_Store',  # mac
+        '.localized',  # mac
+        'CMakeCache.txt',  # cmake
     ]
-    files = [x + ['-type', 'f'] for x in files]
+    files = [['-name', x, '-type', 'f'] for x in files]
 
     folders = [
-        ['-name', 'build'],  # general
-
-        ['-name', 'node_modules'],  # npm, yarn
-        ['-name', 'bower_components'],  # bower
-
-        ['-name', '.build'],  # spm
-        ['-name', 'Pods'],  # cocoapods
-        ['-name', 'Carthage'],  # carthage
-
-        ['-name', 'target'],  # rust
-        ['-name', 'CMakeFiles'],  # cmake
+        'build',  # general
+        'node_modules',  # npm, yarn
+        'bower_components',  # bower
+        '.build',  # spm
+        'Pods',  # cocoapods
+        'Carthage',  # carthage
+        'target',  # rust
+        'CMakeFiles',  # cmake
+        'CMakeScripts',  # cmake
+        'venv',  # pyenv
+        '.venv',  # pyenv
     ]
-    folders = [x + ['-type', 'd', '-prune'] for x in folders]
+    folders = [['-name', x, '-type', 'd', '-prune'] for x in folders]
 
     return functools.reduce(lambda el, rest: el + ['-or'] + rest, folders + files)
 
