@@ -7,5 +7,5 @@ function test_files() {
 
 # test output contains N number of "remove `file`" lines
 function test_output() {
-    [ "$(grep -iE 'remov(e|(ing))' --count <<<"${output}")" -eq "${1}" ]
+    [ "$(grep -iE 'remov((ed?)|(ing))' <<<"${output}" | wc -l)" -eq "${1}" ]
 }

@@ -1,0 +1,52 @@
+version: 2.1
+
+commands:
+  prepare:
+    steps:
+      - checkout
+      - run:
+          name: Print env info
+          command: uname -a
+      - run:
+          name: Update system package managers
+          command: |
+            if command -v apt-get >/dev/null 2>&1; then apt-get update --yes; fi
+            if command -v apk >/dev/null 2>&1; then apk update --no-cache; fi
+  main:
+    steps:
+      - run: make bootstrap
+      - run: make test
+      - run: make install DESTDIR="${HOME}"
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - ubuntu
+      - debian
+      - alpine
+
+jobs:
+  ubuntu:
+    docker:
+      - image: ubuntu
+    steps:
+      - prepare
+      - run: apt-get install --yes build-essential curl python3 python3-pip python3-venv python3-setuptools
+      - run: curl -sL https://deb.nodesource.com/setup_13.x | bash - && apt-get install --yes nodejs
+      - main
+  debian:
+    docker:
+      - image: debian
+    steps:
+      - prepare
+      - run: apt-get install --yes build-essential curl python3 python3-pip python3-venv python3-setuptools
+      - run: curl -sL https://deb.nodesource.com/setup_13.x | bash - && apt-get install --yes nodejs
+      - main
+  alpine:
+    docker:
+      - image: alpine
+    steps:
+      - prepare
+      - run: apk add --no-cache alpine-sdk bash nodejs npm python3 python3-dev py3-virtualenv
+      - main
