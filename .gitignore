@@ -1,3 +1,4 @@
+Brewfile.*
 
 # Created by https://www.gitignore.io/api/python,venv,node
 # Edit at https://www.gitignore.io/?templates=python,venv,node
@@ -80,7 +81,7 @@ typings/
 # nuxt.js build output
 .nuxt
 
-# react / gatsby 
+# react / gatsby
 public/
 
 # vuepress build output
