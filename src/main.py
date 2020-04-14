@@ -17,10 +17,10 @@ log = logging.getLogger('main')
 def main(argv: List[str]) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument( '-n', '--dry-run', action='store_true',
-                        help='Don\'t remove files, only print what would be deleted')
+                        help='do not remove files, only print what would be deleted')
     parser.add_argument('-v', '--verbose', action='store_true',
-                        help='Additional logging output')
-    parser.add_argument('directories', nargs='*', help='Directories to clear')
+                        help='additional logging output')
+    parser.add_argument('directories', nargs='*', help='directories to clear')
     # TODO: add -i/--interactive flag (similar to `git clean -i`)
     # TODO: add -q/--quiet flag
     # TODO: add -V/--version flag (probably after first deployment)
