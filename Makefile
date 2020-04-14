@@ -2,6 +2,7 @@
 # It only groups scripts to use in project
 
 MAKEFLAGS += --warn-undefined-variables
+DESTDIR ?= ~/.bin
 
 .DEFAULT: all
 .PHONY: all
@@ -28,3 +29,10 @@ test:
 	# . venv/bin/activate && pip install .
 	# . venv/bin/activate && TEST_COMMAND=cleardir npm run --prefix tests-cli test
 	# . venv/bin/activate && pip uninstall cleardir
+
+.PHONY: install
+install:
+	# TODO: replace with setup.py
+	rm -f $(DESTDIR)/cleardir
+	cp $(CURDIR)/src/main.py $(DESTDIR)/cleardir
+	chmod +x $(DESTDIR)/cleardir
