@@ -20,6 +20,8 @@ lint:
 
 .PHONY: test
 test:
+	! npm run --prefix tests-cli test >/dev/null 2>&1
+	! TEST_COMMAND= npm run --prefix tests-cli test >/dev/null 2>&1
 	TEST_COMMAND="python3 src/main.py" npm run --prefix tests-cli test
 
 	# TODO: tests for installed executable

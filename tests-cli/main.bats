@@ -4,7 +4,7 @@ load './helpers'
 
 function setup() {
     cd "${BATS_TEST_DIRNAME}/.."
-    if [ -z "${TEST_COMMAND+x}" ]; then
+    if [ -z "${TEST_COMMAND+x}" ] || [ "${TEST_COMMAND}" = '' ]; then
         printf 'TEST_COMMAND not specified\n' >&3
         exit 2
     fi
