@@ -52,21 +52,21 @@ def main(argv: List[str]) -> int:
 # Process single directory
 def process_directory(directory: str, dry_run: bool):
     if not os.path.exists(directory):
-        log.info(f'Could not find "{directory}"')
+        log.info('Could not find %s' % directory)
         return
-    log.info(f'Processing {directory}')
+    log.info('Processing %s' % directory)
 
     for file in find_files(directory):
         if dry_run:
-            print(f'Would remove {file}')
+            print('Would remove %s' % file)
         else:
-            print(f'Removing {file}')
+            print('Removing %s' % file)
             try:
                 delete(file)
             except FileNotFoundError:
                 pass
 
-    log.info(f'Processed {directory}')
+    log.info('Processed %s' % directory)
     log.info('')
 
 
@@ -78,7 +78,7 @@ def delete(entry: str):
     elif os.path.isfile(path):
         os.remove(entry)
     else:
-        raise FileNotFoundError(f'file "${entry}" not exists')
+        raise FileNotFoundError('file "%s" not exists' % entry)
 
 
 def find_files(dir: str) -> Iterable[str]:

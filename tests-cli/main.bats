@@ -180,7 +180,6 @@ function setup() {
     run ${TEST_COMMAND} "${tmpdir}" "${tmpdir2}"
 
     # then
-    echo "${output}" >&3
     [ "${status}" -eq 0 ]
     test_output 2
     test_files "${tmpdir}" 0
