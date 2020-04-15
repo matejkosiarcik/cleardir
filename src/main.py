@@ -26,9 +26,9 @@ def main(argv: List[str]) -> int:
     # TODO: add -V/--version flag (probably after first deployment)
     args = parser.parse_args(argv)
 
-    if args.verbose and args.quiet:
-        print('Can\'t accept both "quiet" and "verbose" flags.', file=sys.stderr)
-        return 1
+    # if args.verbose and args.quiet:
+    #     print('Can\'t accept both "quiet" and "verbose" flags.', file=sys.stderr)
+    #     return 1
 
     # setup logging
     log.setLevel(logging.WARN)
