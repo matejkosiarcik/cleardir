@@ -124,9 +124,9 @@ def files_for_find() -> Iterable[str]:
         '.svn',
     ]
     ignored_folders = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
-    ignore_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders)
+    ignored_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders)
 
-    return ['-not', '('] + ignore_all + [')', '-and', '('] + delete_all + [')']
+    return ['-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
 
 
 if __name__ == "__main__":
