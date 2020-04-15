@@ -26,14 +26,11 @@ workflows:
       - debian: { image: ubuntu:rolling }
 
       - debian: { image: debian:latest }
-      - debian: { image: debian:testing }
       - debian: { image: debian:stable }
       - debian: { image: debian:oldstable }
 
       - alpine: { tag: latest }
       - alpine: { tag: edge }
-      - alpine: { tag: 3.11 }
-      - alpine: { tag: 3.10 }
 
 jobs:
   debian:
