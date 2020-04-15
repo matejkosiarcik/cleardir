@@ -132,7 +132,7 @@ function setup() {
 }
 
 @test 'Deleting nested trees' {
-     # given
+    # given
     tmpdir="$(mktemp -d)"
     mkdir "${tmpdir}/node_modules"
     touch "${tmpdir}/node_modules/.DS_Store"
@@ -153,7 +153,7 @@ function setup() {
 }
 
 @test 'Deleting input files' {
-     # given
+    # given
     tmpdir="$(mktemp -d)"
     touch "${tmpdir}/.DS_Store"
 
@@ -170,7 +170,7 @@ function setup() {
 }
 
 @test 'Deleting multiple input directories' {
-     # given
+    # given
     tmpdir="$(mktemp -d)"
     touch "${tmpdir}/.DS_Store"
     tmpdir2="$(mktemp -d)"

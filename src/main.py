@@ -33,7 +33,7 @@ def main(argv: List[str]) -> int:
     # setup logging
     log.setLevel(logging.WARN)
     if args.verbose:
-        log.setLevel(logging.INFO)
+        log.setLevel(logging.DEBUG)
     log.addHandler(logging.StreamHandler())  # stderr
 
     directories = args.directories
@@ -67,7 +67,6 @@ def process_directory(directory: str, dry_run: bool):
                 pass
 
     log.info('Processed %s' % directory)
-    log.info('')
 
 
 # deletes file(or folder/symlink) from filesystem
@@ -83,6 +82,7 @@ def delete(entry: str):
 
 def find_files(dir: str) -> Iterable[str]:
     command = ['find', dir] + files_for_find()
+    log.debug('Executing: %s' % ' '.join(command))
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
     for line in process.stdout:
         file = str(line.decode('utf-8').strip())
