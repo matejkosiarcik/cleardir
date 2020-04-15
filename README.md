@@ -32,7 +32,7 @@ optional arguments:
 ## Current milestones
 
 - [ ] Improve testing (pytest)
-- [ ] Add install script (+ bats)
+- [ ] Add install script
 - [ ] Release on pypi/brew
 - [ ] Compile to native executable
 - [ ] Replace shell `find` with pure python

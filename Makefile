@@ -31,16 +31,19 @@ lint:
 test:
 	! npm run --prefix tests-cli test >/dev/null 2>&1
 	! TEST_COMMAND= npm run --prefix tests-cli test >/dev/null 2>&1
+	! TEST_COMMAND=placeholder npm run --prefix tests-cli test >/dev/null 2>&1
 	TEST_COMMAND="python3 src/main.py" npm run --prefix tests-cli test
 
 	# TODO: tests for installed executable
-	# . venv/bin/activate && pip install .
-	# . venv/bin/activate && TEST_COMMAND=cleardir npm run --prefix tests-cli test
-	# . venv/bin/activate && pip uninstall cleardir
+	# if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
+	# 	pip3 uninstall cleardir \
+	# 	&& pip3 install . \
+	# 	&& TEST_COMMAND="$${VIRTUAL_ENV}/bin/cleardir" npm run --prefix tests-cli test
+	# ;else exit 1; fi
 
 .PHONY: install
 install:
 	# TODO: replace with setup.py
-	rm -f $(DESTDIR)/cleardir
-	cp $(CURDIR)/src/main.py $(DESTDIR)/cleardir
-	chmod +x $(DESTDIR)/cleardir
+	rm -f "$(DESTDIR)/cleardir"
+	cp "$(CURDIR)/src/main.py" "$(DESTDIR)/cleardir"
+	chmod +x "$(DESTDIR)/cleardir"
