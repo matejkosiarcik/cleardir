@@ -2,7 +2,7 @@
 # It only groups scripts to use in project
 
 MAKEFLAGS += --warn-undefined-variables
-DESTDIR ?= ~/.bin
+DESTDIR ?= "$${HOME}/.bin"
 
 .DEFAULT: all
 .PHONY: all
