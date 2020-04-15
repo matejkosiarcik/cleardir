@@ -27,7 +27,9 @@ workflows:
 
       - debian: { image: debian:latest }
       - debian: { image: debian:stable }
+      - debian: { image: debian:stable-slim }
       - debian: { image: debian:oldstable }
+      - debian: { image: debian:oldstable-slim }
 
       - alpine: { tag: latest }
       - alpine: { tag: edge }
