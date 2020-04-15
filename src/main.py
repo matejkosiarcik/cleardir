@@ -103,13 +103,20 @@ def find_files(dir: str) -> Iterable[str]:
 def files_for_find() -> Iterable[str]:
     delete_files = [
         '.DS_Store',  # macOS
+        '.AppleDouble',  # macOS
+        '.LSOverride',  # macOS
         '.localized',  # macOS
         'CMakeCache.txt',  # cmake
         '._*',  # dotbar macos/BSD files
+        '[T|t]humbs.db',  # Windows
+        'ehthumbs.db',  # Windows
+        'ehthumbs_vista.db',  # Windows
+        '[D|d]esktop.ini',  # Windows
     ]
     delete_files = (['-name', x, '-type', 'f'] for x in delete_files)
 
     delete_folders = [
+        'dist',  # default dist folder
         'node_modules',  # npm, yarn
         'bower_components',  # bower
         '.build',  # swift package manager
@@ -120,6 +127,7 @@ def files_for_find() -> Iterable[str]:
         'venv',  # python (virtualenv, pyenv)
         '.venv',  # python (virtualenv, pyenv)
     ]
+    # TODO: consider .Trash, .Trashes, .Trash-*
     delete_folders = (['-name', x, '-type', 'd', '-prune'] for x in delete_folders)
     delete_all = functools.reduce(lambda all, el: all + ['-or'] + el, itertools.chain(delete_folders, delete_files))
 
