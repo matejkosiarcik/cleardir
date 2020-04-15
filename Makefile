@@ -18,7 +18,8 @@ bootstrap:
 		|| mkvirtualenv venv
 	# install dependencies into existing or created virtual environment
 	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
-		pip3 install --upgrade pip setuptools \
+		python3 -m ensurepip \
+		&& pip3 install --upgrade pip setuptools \
 		&& pip3 install --requirement requirements-dev.txt \
 	;else exit 1; fi
 	npm install --prefix tests-cli
