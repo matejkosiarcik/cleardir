@@ -2,6 +2,16 @@
 
 > Clears directory from development and OS junk files
 
+<!-- toc -->
+
+* [Installation](#installation)
+  * [Via package manager](#via-package-manager)
+  * [Manually](#manually)
+* [Usage](#usage)
+* [Current milestones](#current-milestones)
+
+<!-- tocstop -->
+
 ## Installation
 
 ### Via package manager
