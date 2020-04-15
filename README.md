@@ -4,11 +4,11 @@
 
 <!-- toc -->
 
-* [Installation](#installation)
+- [Installation](#installation)
   * [Via package manager](#via-package-manager)
   * [Manually](#manually)
-* [Usage](#usage)
-* [Current milestones](#current-milestones)
+- [Usage](#usage)
+- [Current milestones](#current-milestones)
 
 <!-- tocstop -->
 
