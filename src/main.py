@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# TODO: apply formatting and linting (combination of pep8, yapf, black, pylint, pycodestyle)
 
 import argparse
 import sys
