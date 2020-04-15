@@ -61,6 +61,10 @@ def process_directory(directory: str, dry_run: bool):
         return
     log.info('Processing %s' % directory)
 
+    if os.path.isdir(os.path.realpath(directory)):
+        # TODO: call dot_clean if not dry_run
+        pass
+
     for file in find_files(directory):
         if dry_run:
             print('Would remove %s' % file)
