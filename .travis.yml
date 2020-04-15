@@ -4,12 +4,6 @@ os:
   - linux
   - osx
 
-dist:
-  - ""
-  - bionic
-  - xenial
-  - trusty
-
 addons:
   apt:
     update: true
