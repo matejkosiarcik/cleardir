@@ -105,15 +105,11 @@ def files_for_find() -> Iterable[str]:
     delete_files = (['-name', x, '-type', 'f'] for x in delete_files)
 
     delete_folders = [
-        # 'dist',  # general, node
-        # 'public',  # general, node
-        # 'build',  # general
         'node_modules',  # npm, yarn
         'bower_components',  # bower
         '.build',  # swift package manager
         'Pods',  # cocoapods (obj-c, swift)
         'Carthage',  # carthage (obj-c, swift)
-        # 'target',  # rust
         'CMakeFiles',  # cmake
         'CMakeScripts',  # cmake
         'venv',  # python (virtualenv, pyenv)
