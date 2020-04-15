@@ -30,7 +30,10 @@ workflows:
       - debian: { image: debian:stable }
       - debian: { image: debian:oldstable }
 
-      - alpine
+      - alpine: { tag: latest }
+      - alpine: { tag: edge }
+      - alpine: { tag: 3.11 }
+      - alpine: { tag: 3.10 }
 
 jobs:
   debian:
@@ -45,8 +48,11 @@ jobs:
       - run: curl -sL https://deb.nodesource.com/setup_13.x | bash - && apt-get install --yes nodejs
       - main
   alpine:
+    parameters:
+      tag:
+        type: string
     docker:
-      - image: alpine
+      - image: "alpine:<< parameters.tag >>"
     steps:
       - prepare
       - run: apk add --no-cache alpine-sdk bash nodejs npm python3 python3-dev py3-virtualenv
