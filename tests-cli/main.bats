@@ -22,6 +22,28 @@ function setup() {
     grep -i usage <<<"${output}"
 }
 
+@test 'Running without -f/-n' {
+    tmpdir="$(mktemp -d)"
+    run ${TEST_COMMAND} "${tmpdir}"
+    [ "${status}" -ne 0 ]
+    [ "${output}" != '' ]
+}
+
+@test 'Running with both -f/-n' {
+    tmpdir="$(mktemp -d)"
+    run ${TEST_COMMAND} -f -n "${tmpdir}"
+    [ "${status}" -ne 0 ]
+    [ "${output}" != '' ]
+
+    run ${TEST_COMMAND} -n -f "${tmpdir}"
+    [ "${status}" -ne 0 ]
+    [ "${output}" != '' ]
+
+    run ${TEST_COMMAND} --force -n "${tmpdir}"
+    [ "${status}" -ne 0 ]
+    [ "${output}" != '' ]
+}
+
 @test 'Deleting junk files' {
     # given
     tmpdir="$(mktemp -d)"
@@ -29,7 +51,7 @@ function setup() {
     mkdir "${tmpdir}/node_modules"
 
     # when
-    run ${TEST_COMMAND} "${tmpdir}"
+    run ${TEST_COMMAND} --force "${tmpdir}"
 
     # then
     [ "${status}" -eq 0 ]
@@ -47,7 +69,7 @@ function setup() {
     mkdir "${tmpdir}/foo"
 
     # when
-    run ${TEST_COMMAND} "${tmpdir}"
+    run ${TEST_COMMAND} -f "${tmpdir}"
 
     # then
     [ "${status}" -eq 0 ]
@@ -68,7 +90,7 @@ function setup() {
     mkdir "${tmpdir}/venv"
 
     # when
-    run ${TEST_COMMAND} "${tmpdir}"
+    run ${TEST_COMMAND} -f "${tmpdir}"
 
     # then
     [ "${status}" -eq 0 ]
@@ -120,7 +142,7 @@ function setup() {
     test_files "${tmpdir}" 1
 
     # when
-    run ${TEST_COMMAND} "${tmpdir}"
+    run ${TEST_COMMAND} "${tmpdir}" --force
 
     # then
     [ "${status}" -eq 0 ]
@@ -141,7 +163,7 @@ function setup() {
     touch "${tmpdir}/node_modules/venv/.DS_Store"
 
     # when
-    run ${TEST_COMMAND} "${tmpdir}"
+    run ${TEST_COMMAND} -f "${tmpdir}"
 
     # then
     [ "${status}" -eq 0 ]
@@ -158,7 +180,7 @@ function setup() {
     touch "${tmpdir}/.DS_Store"
 
     # when
-    run ${TEST_COMMAND} "${tmpdir}/.DS_Store"
+    run ${TEST_COMMAND} -f "${tmpdir}/.DS_Store"
 
     # then
     [ "${status}" -eq 0 ]
@@ -177,7 +199,7 @@ function setup() {
     mkdir "${tmpdir2}/node_modules"
 
     # when
-    run ${TEST_COMMAND} "${tmpdir}" "${tmpdir2}"
+    run ${TEST_COMMAND} -f "${tmpdir}" "${tmpdir2}"
 
     # then
     [ "${status}" -eq 0 ]
@@ -196,7 +218,7 @@ function setup() {
     touch "${tmpdir}/.git/.DS_Store"
 
     # when
-    run ${TEST_COMMAND} "${tmpdir}"
+    run ${TEST_COMMAND} -f "${tmpdir}"
 
     # then
     [ "${status}" -eq 0 ]

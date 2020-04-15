@@ -1,9 +1,0 @@
-.git/
-venv/
-.*ci/
-.vscode/
-tests/
-tests-*/
-
-**/.DS_Store
-**/Brewfile*

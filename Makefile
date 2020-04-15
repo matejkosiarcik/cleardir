@@ -47,3 +47,7 @@ install:
 	rm -f "$(DESTDIR)/cleardir"
 	cp "$(CURDIR)/src/main.py" "$(DESTDIR)/cleardir"
 	chmod +x "$(DESTDIR)/cleardir"
+
+.PHONY: doc
+doc:
+	markdown-toc -i --bullets '*' README.md

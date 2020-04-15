@@ -2,6 +2,16 @@
 
 > Clears directory from development and OS junk files
 
+<!-- toc -->
+
+* [Installation](#installation)
+  * [Via package manager](#via-package-manager)
+  * [Manually](#manually)
+* [Usage](#usage)
+* [Current milestones](#current-milestones)
+
+<!-- tocstop -->
+
 ## Installation
 
 ### Via package manager
@@ -18,14 +28,15 @@ Better install method based on `setup.py`/`pip` is coming soon.
 
 ```sh
 $ cleardir --help
-usage: main.py [-h] [-n] [-v] [directories [directories ...]]
+usage: main.py [-h] [-n] [-f] [-v] [paths [paths ...]]
 
 positional arguments:
-  directories    directories to clear
+  paths          directories to clear (also accepts filepaths)
 
 optional arguments:
   -h, --help     show this help message and exit
   -n, --dry-run  do not remove files, only print what would be deleted
+  -f, --force    actually perform file/directory removal
   -v, --verbose  additional logging output
 ```
 
