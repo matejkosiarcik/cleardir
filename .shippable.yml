@@ -1,0 +1,20 @@
+language: python
+
+python:
+  # - "3.8"
+  - "3.7"
+  # - "3.6"
+  - "3.5"
+  # - "3.4"
+  # - "3.3"
+  # - "3.2"
+  - pypy3
+
+build:
+  pre_ci:
+    - apt-get update --yes
+    - apt-get install --yes build-essential
+  ci:
+    - make bootstrap
+    - make test
+    - make install DESTDIR="${HOME}"
