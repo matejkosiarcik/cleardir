@@ -22,30 +22,34 @@ workflows:
   version: 2
   test:
     jobs:
-      - ubuntu
-      - debian
-      - alpine
+      - debian: { image: ubuntu:latest }
+      - debian: { image: ubuntu:rolling }
+
+      - debian: { image: debian:latest }
+      - debian: { image: debian:stable }
+      - debian: { image: debian:oldstable }
+
+      - alpine: { tag: latest }
+      - alpine: { tag: edge }
 
 jobs:
-  ubuntu:
-    docker:
-      - image: ubuntu
-    steps:
-      - prepare
-      - run: apt-get install --yes build-essential curl python3 python3-pip python3-venv python3-setuptools
-      - run: curl -sL https://deb.nodesource.com/setup_13.x | bash - && apt-get install --yes nodejs
-      - main
   debian:
+    parameters:
+      image:
+        type: string
     docker:
-      - image: debian
+      - image: "<< parameters.image >>"
     steps:
       - prepare
       - run: apt-get install --yes build-essential curl python3 python3-pip python3-venv python3-setuptools
       - run: curl -sL https://deb.nodesource.com/setup_13.x | bash - && apt-get install --yes nodejs
       - main
   alpine:
+    parameters:
+      tag:
+        type: string
     docker:
-      - image: alpine
+      - image: "alpine:<< parameters.tag >>"
     steps:
       - prepare
       - run: apk add --no-cache alpine-sdk bash nodejs npm python3 python3-dev py3-virtualenv
