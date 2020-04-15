@@ -92,15 +92,15 @@ def find_files(dir: str) -> Iterable[str]:
 
 # returns generic list of files to add to "find" command
 def files_for_find() -> Iterable[str]:
-    files = [
+    delete_files = [
         '.DS_Store',  # macOS
         '.localized',  # macOS
         'CMakeCache.txt',  # cmake
         '._*',  # dotbar macos/BSD files
     ]
-    files = (['-name', x, '-type', 'f'] for x in files)
+    delete_files = (['-name', x, '-type', 'f'] for x in delete_files)
 
-    folders = [
+    delete_folders = [
         # 'dist',  # general, node
         # 'public',  # general, node
         # 'build',  # general
@@ -115,9 +115,18 @@ def files_for_find() -> Iterable[str]:
         'venv',  # python (virtualenv, pyenv)
         '.venv',  # python (virtualenv, pyenv)
     ]
-    folders = (['-name', x, '-type', 'd', '-prune'] for x in folders)
+    delete_folders = (['-name', x, '-type', 'd', '-prune'] for x in delete_folders)
+    delete_all = functools.reduce(lambda all, el: all + ['-or'] + el, itertools.chain(delete_folders, delete_files))
 
-    return functools.reduce(lambda all, el: all + ['-or'] + el, itertools.chain(folders, files))
+    ignored_folders = [
+        '.git',
+        '.hg',
+        '.svn',
+    ]
+    ignored_folders = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
+    ignore_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders)
+
+    return ['-not', '('] + ignore_all + [')', '-and', '('] + delete_all + [')']
 
 
 if __name__ == "__main__":
