@@ -10,15 +10,21 @@ import functools
 from typing import List, Iterable
 import logging
 import itertools
+import enum
 
 log = logging.getLogger('main')
 
+class Mode(enum.Enum):
+    DRY_RUN = 0,
+    FORCE = 1
 
 # Main function
 def main(argv: List[str]) -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument( '-n', '--dry-run', action='store_true',
+    parser.add_argument('-n', '--dry-run', action='store_true',
                         help='do not remove files, only print what would be deleted')
+    parser.add_argument('-f', '--force', action='store_true',
+                        help='actually perform file/directory removal')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='additional logging output')
     parser.add_argument('paths', nargs='*', help='directories to clear (also accepts filepaths)')
@@ -27,13 +33,25 @@ def main(argv: List[str]) -> int:
     # TODO: add -V/--version flag (probably after first deployment)
     # TODO: add -k,--keep flag to keep certain files
     # TODO: add -a,--add flag to add additional files for deletion
-    # TODO: add -f,--force flag
-    # TODO: discontinue usage without one of -n/-i/-f flags (similar to `git clean`)
     args = parser.parse_args(argv)
 
     # if args.verbose and args.quiet:
     #     print('Can\'t accept both "quiet" and "verbose" flags.', file=sys.stderr)
     #     return 1
+
+    mode = None
+    if args.dry_run:
+        mode = Mode.DRY_RUN
+    elif args.force:
+        mode = Mode.FORCE
+
+    if mode is None:
+        print('Must pass either --force or --dry-run', file=sys.stderr)
+        sys.exit(1)
+
+    if sum(1 if x else 0 for x in [args.dry_run, args.force]) > 1:
+        print('--force and --dry-run are mutually exclusive', file=sys.stderr)
+        sys.exit(1)
 
     # setup logging
     log.setLevel(logging.WARN)
@@ -48,14 +66,13 @@ def main(argv: List[str]) -> int:
     directories = [x for x in directories if len(x) > 0]
     assert len(directories) > 0
 
-    dry_run = args.dry_run
     for directory in directories:
-        process_directory(directory, dry_run)
+        process_directory(directory, mode)
     return 0
 
 
 # Process single directory
-def process_directory(directory: str, dry_run: bool):
+def process_directory(directory: str, mode: Mode):
     if not os.path.exists(directory):
         log.info('Could not find %s' % directory)
         return
@@ -66,9 +83,9 @@ def process_directory(directory: str, dry_run: bool):
         pass
 
     for file in find_files(directory):
-        if dry_run:
+        if mode == Mode.DRY_RUN:
             print('Would remove %s' % file)
-        else:
+        elif mode == Mode.FORCE:
             print('Removing %s' % file)
             try:
                 delete(file)
