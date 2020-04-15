@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# TODO: apply formatting and linting (combination of pep8, yapf, black, pylint, pycodestyle)
 
 import argparse
 import sys
@@ -20,10 +21,14 @@ def main(argv: List[str]) -> int:
                         help='do not remove files, only print what would be deleted')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='additional logging output')
-    parser.add_argument('directories', nargs='*', help='directories to clear')
+    parser.add_argument('paths', nargs='*', help='directories to clear (also accepts filepaths)')
     # TODO: add -i/--interactive flag (similar to `git clean -i`)
     # TODO: add -q/--quiet flag
     # TODO: add -V/--version flag (probably after first deployment)
+    # TODO: add -k,--keep flag to keep certain files
+    # TODO: add -a,--add flag to add additional files for deletion
+    # TODO: add -f,--force flag
+    # TODO: discontinue usage without one of -n/-i/-f flags (similar to `git clean`)
     args = parser.parse_args(argv)
 
     # if args.verbose and args.quiet:
@@ -36,7 +41,7 @@ def main(argv: List[str]) -> int:
         log.setLevel(logging.DEBUG)
     log.addHandler(logging.StreamHandler())  # stderr
 
-    directories = args.directories
+    directories = args.paths
     if directories is None:
         log.info('No directory given. Using "."')
         directories = ['.']
@@ -101,15 +106,11 @@ def files_for_find() -> Iterable[str]:
     delete_files = (['-name', x, '-type', 'f'] for x in delete_files)
 
     delete_folders = [
-        # 'dist',  # general, node
-        # 'public',  # general, node
-        # 'build',  # general
         'node_modules',  # npm, yarn
         'bower_components',  # bower
         '.build',  # swift package manager
         'Pods',  # cocoapods (obj-c, swift)
         'Carthage',  # carthage (obj-c, swift)
-        # 'target',  # rust
         'CMakeFiles',  # cmake
         'CMakeScripts',  # cmake
         'venv',  # python (virtualenv, pyenv)
@@ -124,9 +125,9 @@ def files_for_find() -> Iterable[str]:
         '.svn',
     ]
     ignored_folders = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
-    ignore_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders)
+    ignored_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders)
 
-    return ['-not', '('] + ignore_all + [')', '-and', '('] + delete_all + [')']
+    return ['-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
 
 
 if __name__ == "__main__":

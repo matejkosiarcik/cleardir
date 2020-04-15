@@ -4,11 +4,11 @@
 
 ## Installation
 
-## Via package manager
+### Via package manager
 
 Coming soon
 
-## Manually
+### Manually
 
 Just clone this repo and run `make install` (or `make install DESTDIR=/my/custom/dir`)
 
