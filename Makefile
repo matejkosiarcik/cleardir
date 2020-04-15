@@ -10,8 +10,17 @@ all: bootstrap sysinfo lint test
 
 .PHONY: bootstrap
 bootstrap:
-	[ -d venv ] || python3 -m venv venv || python -m venv venv || virtualenv venv || mkvirtualenv venv
-	. venv/bin/activate && pip3 install --upgrade pip setuptools && pip install --requirement requirements-dev.txt
+	# check if virtual environment exists or create it
+	[ -n "$${VIRTUAL_ENV+x}" ] || [ -d venv ] \
+		|| python3 -m venv venv \
+		|| python -m venv venv \
+		|| virtualenv venv \
+		|| mkvirtualenv venv
+	# install dependencies into existing or created virtual environment
+	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
+		pip3 install --upgrade pip setuptools \
+		&& pip3 install --requirement requirements-dev.txt \
+	;else exit 1; fi
 	npm install --prefix tests-cli
 
 .PHONY: sysinfo
