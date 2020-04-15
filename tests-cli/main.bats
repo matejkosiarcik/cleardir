@@ -132,7 +132,7 @@ function setup() {
 }
 
 @test 'Deleting nested trees' {
-     # given
+    # given
     tmpdir="$(mktemp -d)"
     mkdir "${tmpdir}/node_modules"
     touch "${tmpdir}/node_modules/.DS_Store"
@@ -153,7 +153,7 @@ function setup() {
 }
 
 @test 'Deleting input files' {
-     # given
+    # given
     tmpdir="$(mktemp -d)"
     touch "${tmpdir}/.DS_Store"
 
@@ -170,7 +170,7 @@ function setup() {
 }
 
 @test 'Deleting multiple input directories' {
-     # given
+    # given
     tmpdir="$(mktemp -d)"
     touch "${tmpdir}/.DS_Store"
     tmpdir2="$(mktemp -d)"
@@ -187,4 +187,23 @@ function setup() {
 
     # cleanup
     rm -rf "${tmpdir}" "${tmpdir2}"
+}
+
+@test 'Not deleting inside vcs folders' {
+    # given
+    tmpdir="$(mktemp -d)"
+    mkdir "${tmpdir}/.git"
+    touch "${tmpdir}/.git/.DS_Store"
+
+    # when
+    run ${TEST_COMMAND} "${tmpdir}"
+
+    # then
+    [ "${status}" -eq 0 ]
+    test_output 0
+    test_files "${tmpdir}" 1
+    [ -f "${tmpdir}/.git/.DS_Store" ]
+
+    # cleanup
+    rm -rf "${tmpdir}"
 }

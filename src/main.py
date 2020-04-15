@@ -26,14 +26,14 @@ def main(argv: List[str]) -> int:
     # TODO: add -V/--version flag (probably after first deployment)
     args = parser.parse_args(argv)
 
-    if args.verbose and args.quiet:
-        print('Can\'t accept both "quiet" and "verbose" flags.', file=sys.stderr)
-        return 1
+    # if args.verbose and args.quiet:
+    #     print('Can\'t accept both "quiet" and "verbose" flags.', file=sys.stderr)
+    #     return 1
 
     # setup logging
     log.setLevel(logging.WARN)
     if args.verbose:
-        log.setLevel(logging.INFO)
+        log.setLevel(logging.DEBUG)
     log.addHandler(logging.StreamHandler())  # stderr
 
     directories = args.directories
@@ -67,7 +67,6 @@ def process_directory(directory: str, dry_run: bool):
                 pass
 
     log.info('Processed %s' % directory)
-    log.info('')
 
 
 # deletes file(or folder/symlink) from filesystem
@@ -83,6 +82,7 @@ def delete(entry: str):
 
 def find_files(dir: str) -> Iterable[str]:
     command = ['find', dir] + files_for_find()
+    log.debug('Executing: %s' % ' '.join(command))
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
     for line in process.stdout:
         file = str(line.decode('utf-8').strip())
@@ -92,15 +92,15 @@ def find_files(dir: str) -> Iterable[str]:
 
 # returns generic list of files to add to "find" command
 def files_for_find() -> Iterable[str]:
-    files = [
+    delete_files = [
         '.DS_Store',  # macOS
         '.localized',  # macOS
         'CMakeCache.txt',  # cmake
         '._*',  # dotbar macos/BSD files
     ]
-    files = (['-name', x, '-type', 'f'] for x in files)
+    delete_files = (['-name', x, '-type', 'f'] for x in delete_files)
 
-    folders = [
+    delete_folders = [
         # 'dist',  # general, node
         # 'public',  # general, node
         # 'build',  # general
@@ -115,9 +115,18 @@ def files_for_find() -> Iterable[str]:
         'venv',  # python (virtualenv, pyenv)
         '.venv',  # python (virtualenv, pyenv)
     ]
-    folders = (['-name', x, '-type', 'd', '-prune'] for x in folders)
+    delete_folders = (['-name', x, '-type', 'd', '-prune'] for x in delete_folders)
+    delete_all = functools.reduce(lambda all, el: all + ['-or'] + el, itertools.chain(delete_folders, delete_files))
 
-    return functools.reduce(lambda all, el: all + ['-or'] + el, itertools.chain(folders, files))
+    ignored_folders = [
+        '.git',
+        '.hg',
+        '.svn',
+    ]
+    ignored_folders = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
+    ignore_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders)
+
+    return ['-not', '('] + ignore_all + [')', '-and', '('] + delete_all + [')']
 
 
 if __name__ == "__main__":
