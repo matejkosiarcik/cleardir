@@ -6,7 +6,7 @@ DESTDIR ?= ~/.bin
 
 .DEFAULT: all
 .PHONY: all
-all: bootstrap sysinfo lint test
+all: bootstrap lint test
 
 .PHONY: bootstrap
 bootstrap:
@@ -22,17 +22,6 @@ bootstrap:
 		&& pip3 install --requirement requirements-dev.txt \
 	;else exit 1; fi
 	npm install --prefix tests-cli
-
-.PHONY: sysinfo
-sysinfo:
-	uname -a
-	python3 --version || true
-	pip3 --version || true
-	python --version || true
-	pip --version || true
-	node --version || true
-	npm --version || true
-	sh --version || true
 
 .PHONY: lint
 lint:

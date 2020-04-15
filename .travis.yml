@@ -18,10 +18,10 @@ addons:
 before_install:
   - uname -a
   - if [ "$(uname -s)" = 'Darwin' ]; then sw_vers; fi
+  - python3 --version
 
 install:
   - make bootstrap
-  - make sysinfo
 
 script:
   - make test
