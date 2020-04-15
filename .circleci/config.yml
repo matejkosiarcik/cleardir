@@ -23,7 +23,13 @@ workflows:
   test:
     jobs:
       - debian: { image: ubuntu:latest }
+      - debian: { image: ubuntu:rolling }
+
       - debian: { image: debian:latest }
+      - debian: { image: debian:testing }
+      - debian: { image: debian:stable }
+      - debian: { image: debian:oldstable }
+
       - alpine
 
 jobs:
