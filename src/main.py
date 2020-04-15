@@ -20,10 +20,14 @@ def main(argv: List[str]) -> int:
                         help='do not remove files, only print what would be deleted')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='additional logging output')
-    parser.add_argument('directories', nargs='*', help='directories to clear')
+    parser.add_argument('paths', nargs='*', help='directories to clear (also accepts filepaths)')
     # TODO: add -i/--interactive flag (similar to `git clean -i`)
     # TODO: add -q/--quiet flag
     # TODO: add -V/--version flag (probably after first deployment)
+    # TODO: add -k,--keep flag to keep certain files
+    # TODO: add -a,--add flag to add additional files for deletion
+    # TODO: add -f,--force flag
+    # TODO: discontinue usage without one of -n/-i/-f flags (similar to `git clean`)
     args = parser.parse_args(argv)
 
     # if args.verbose and args.quiet:
@@ -36,7 +40,7 @@ def main(argv: List[str]) -> int:
         log.setLevel(logging.DEBUG)
     log.addHandler(logging.StreamHandler())  # stderr
 
-    directories = args.directories
+    directories = args.paths
     if directories is None:
         log.info('No directory given. Using "."')
         directories = ['.']
