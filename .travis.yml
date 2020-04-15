@@ -4,6 +4,12 @@ os:
   - linux
   - osx
 
+dist:
+  - ""
+  - bionic
+  - xenial
+  - trusty
+
 addons:
   apt:
     update: true
@@ -14,14 +20,6 @@ addons:
       - python3-setuptools
   homebrew:
     update: true
-
-matrix:
-  include:
-    - { if: branch = master, os: linux, dist: "" }
-    - { if: branch = master, os: linux, dist: bionic }
-    - { if: branch = master, os: linux, dist: xenial }
-    - { if: branch = master, os: linux, dist: trusty }
-    - { if: branch = master, os: linux, dist: precise }
 
 before_install:
   - uname -a
