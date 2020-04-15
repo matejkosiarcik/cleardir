@@ -90,56 +90,54 @@ def delete(entry: str):
 
 
 def find_files(dir: str) -> Iterable[str]:
-    command = ['find', dir] + files_for_find()
+    def find_command() -> Iterable[str]:
+        # returns generic list of files to add to "find" command
+        delete_files = [
+            '.DS_Store',  # macOS
+            '.AppleDouble',  # macOS
+            '.LSOverride',  # macOS
+            '.localized',  # macOS
+            'CMakeCache.txt',  # cmake
+            '._*',  # dotbar macos/BSD files
+            '[T|t]humbs.db',  # Windows
+            'ehthumbs.db',  # Windows
+            'ehthumbs_vista.db',  # Windows
+            '[D|d]esktop.ini',  # Windows
+        ]
+        delete_files = (['-name', x, '-type', 'f'] for x in delete_files)
+        delete_folders = [
+            'dist',  # default dist folder
+            'node_modules',  # npm, yarn
+            'bower_components',  # bower
+            '.build',  # swift package manager
+            'Pods',  # cocoapods (obj-c, swift)
+            'Carthage',  # carthage (obj-c, swift)
+            'CMakeFiles',  # cmake
+            'CMakeScripts',  # cmake
+            'venv',  # python (virtualenv, pyenv)
+            '.venv',  # python (virtualenv, pyenv)
+        ]
+        # TODO: consider .Trash, .Trashes, .Trash-*
+        delete_folders = (['-name', x, '-type', 'd', '-prune'] for x in delete_folders)
+        delete_all = functools.reduce(lambda all, el: all + ['-or'] + el, itertools.chain(delete_folders, delete_files))
+
+        ignored_folders = [
+            '.git',
+            '.hg',
+            '.svn',
+        ]
+        ignored_folders = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
+        ignored_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders)
+
+        return ['find', dir, '-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
+
+    command = find_command()
     log.debug('Executing: %s' % ' '.join(command))
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
     for line in process.stdout:
         file = str(line.decode('utf-8').strip())
         yield file
     process.communicate()
-
-
-# returns generic list of files to add to "find" command
-def files_for_find() -> Iterable[str]:
-    delete_files = [
-        '.DS_Store',  # macOS
-        '.AppleDouble',  # macOS
-        '.LSOverride',  # macOS
-        '.localized',  # macOS
-        'CMakeCache.txt',  # cmake
-        '._*',  # dotbar macos/BSD files
-        '[T|t]humbs.db',  # Windows
-        'ehthumbs.db',  # Windows
-        'ehthumbs_vista.db',  # Windows
-        '[D|d]esktop.ini',  # Windows
-    ]
-    delete_files = (['-name', x, '-type', 'f'] for x in delete_files)
-
-    delete_folders = [
-        'dist',  # default dist folder
-        'node_modules',  # npm, yarn
-        'bower_components',  # bower
-        '.build',  # swift package manager
-        'Pods',  # cocoapods (obj-c, swift)
-        'Carthage',  # carthage (obj-c, swift)
-        'CMakeFiles',  # cmake
-        'CMakeScripts',  # cmake
-        'venv',  # python (virtualenv, pyenv)
-        '.venv',  # python (virtualenv, pyenv)
-    ]
-    # TODO: consider .Trash, .Trashes, .Trash-*
-    delete_folders = (['-name', x, '-type', 'd', '-prune'] for x in delete_folders)
-    delete_all = functools.reduce(lambda all, el: all + ['-or'] + el, itertools.chain(delete_folders, delete_files))
-
-    ignored_folders = [
-        '.git',
-        '.hg',
-        '.svn',
-    ]
-    ignored_folders = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
-    ignored_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders)
-
-    return ['-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
 
 
 if __name__ == "__main__":
