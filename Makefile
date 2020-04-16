@@ -19,12 +19,17 @@ bootstrap:
 	# install dependencies into existing or created virtual environment
 	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
 		pip3 install --upgrade pip setuptools \
-		&& pip3 install --requirement requirements-dev.txt \
+		&& pip3 install --requirement requirements.txt --requirement requirements-dev.txt \
 	;else exit 1; fi
 	npm install --prefix tests-cli
 
 .PHONY: lint
 lint:
+	# TODO: remove this after it is implemented in-module for python2
+	# crude check that strip-hints work
+	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
+		strip-hints --to-empty src/main.py >/dev/null
+	;else exit 1; fi
 	# TODO: lint tasks
 
 .PHONY: test
@@ -32,7 +37,10 @@ test:
 	! npm run --prefix tests-cli test >/dev/null 2>&1
 	! TEST_COMMAND= npm run --prefix tests-cli test >/dev/null 2>&1
 	! TEST_COMMAND=placeholder npm run --prefix tests-cli test >/dev/null 2>&1
+
 	TEST_COMMAND="python3 src/main.py" npm run --prefix tests-cli test
+	# TODO: test for python2
+	# TODO: test for python3 module
 
 	# TODO: tests for installed executable
 	# if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
