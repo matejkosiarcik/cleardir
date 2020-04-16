@@ -20,7 +20,7 @@ Coming soon
 
 ### Manually
 
-Just clone this repo and run `make install` (or `make install DESTDIR=/my/custom/dir`)
+Just clone this repo and run `make install` (or `make install DESTDIR=/my/custom/dir`).
 
 Better install method based on `setup.py`/`pip` is coming soon.
 
