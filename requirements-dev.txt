@@ -1,6 +1,8 @@
+# testing
 pytest
-pylint
 
+# code quality
+pylint
 # pycodestyle
 # autopep8
 # flake8
