@@ -1,6 +1,10 @@
 #!/usr/bin/env python
-# TODO: apply formatting and linting (combination of pep8, yapf, black, pylint, pycodestyle)
+# TODO: apply formatting and linting
 
+from __future__ import (
+    absolute_import, division, print_function, unicode_literals
+)
+from builtins import *
 import argparse
 import sys
 import os

@@ -1,6 +1,11 @@
-pytest
-pylint
+# native executable conversion
+Cython
 
+# testing
+pytest
+
+# code quality
+pylint
 # pycodestyle
 # autopep8
 # flake8
