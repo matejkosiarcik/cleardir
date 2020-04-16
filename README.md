@@ -12,6 +12,14 @@
 
 <!-- tocstop -->
 
+## About
+
+`cleardir` is a directory cleaner that removes development files and folders
+(such as `node_modules`) and OS junk files (such as `.DS_Store`).
+
+Written in *python3*.
+Future plan is to be compatible with *python2.7* as well.
+
 ## Installation
 
 ### Via package manager
@@ -26,9 +34,14 @@ Better install method based on `setup.py`/`pip` is coming soon.
 
 ## Usage
 
-```sh
+For example to see what would be deleted in current directory call
+`cleardir -n .`.
+
+The list of all options:
+
+```txt
 $ cleardir --help
-usage: main.py [-h] [-n] [-f] [-v] [paths [paths ...]]
+usage: cleardir [-h] [-n] [-f] [-v] [paths [paths ...]]
 
 positional arguments:
   paths          directories to clear (also accepts filepaths)
