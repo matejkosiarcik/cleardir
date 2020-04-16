@@ -4,6 +4,7 @@
 
 <!-- toc -->
 
+- [About](#about)
 - [Installation](#installation)
   * [Via package manager](#via-package-manager)
   * [Manually](#manually)
