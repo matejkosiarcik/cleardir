@@ -15,11 +15,13 @@ function setup() {
     [ "${status}" -eq 0 ]
     [ "${output}" != '' ]
     grep -i usage <<<"${output}"
+    grep -i 'usage: cleardir' <<<"${output}"
 
     run ${TEST_COMMAND} --help
     [ "${status}" -eq 0 ]
     [ "${output}" != '' ]
     grep -i usage <<<"${output}"
+    grep -i 'usage: cleardir' <<<"${output}"
 }
 
 @test 'Running without -f/-n' {

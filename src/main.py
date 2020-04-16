@@ -32,6 +32,7 @@ def main(argv: List[str]) -> int:
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='additional logging output')
     parser.add_argument('paths', nargs='*', help='directories to clear (also accepts filepaths)')
+    parser.prog = 'cleardir'
     # TODO: add -i/--interactive flag (similar to `git clean -i`)
     # TODO: add -q/--quiet flag
     # TODO: add -V/--version flag (probably after first deployment)
