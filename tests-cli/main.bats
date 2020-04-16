@@ -191,7 +191,24 @@ function setup() {
     rm -rf "${tmpdir}"
 }
 
-@test 'Deleting multiple input directories' {
+@test 'Not deleting root directory' {
+    # given
+    tmpdir="$(mktemp -d)"
+    mkdir "${tmpdir}/node_modules"
+
+    # when
+    run ${TEST_COMMAND} -f "${tmpdir}/node_modules"
+
+    # then
+    [ "${status}" -eq 0 ]
+    test_output 1
+    test_files "${tmpdir}" 0
+
+    # cleanup
+    rm -rf "${tmpdir}"
+}
+
+@test 'Deleting in multiple directories' {
     # given
     tmpdir="$(mktemp -d)"
     touch "${tmpdir}/.DS_Store"
