@@ -20,7 +20,8 @@ log = logging.getLogger('main')
 
 class Mode(enum.Enum):
     DRY_RUN = 0,
-    FORCE = 1
+    FORCE = 1,
+    INTERACTIVE = 2
 
 # Main function
 def main(argv: List[str]) -> int:
@@ -96,6 +97,8 @@ def process_directory(directory: str, mode: Mode):
                 delete(file)
             except FileNotFoundError:
                 pass
+        elif mode == Mode.INTERACTIVE:
+            raise NotImplementedError('Interactive mode not yet implemented')
 
     log.info('Processed %s' % directory)
 
