@@ -15,7 +15,7 @@ commands:
   main:
     steps:
       - run: make bootstrap
-      - run: make test
+      - run: make lint test
       - run: make install DESTDIR="${HOME}"
 
 workflows:
