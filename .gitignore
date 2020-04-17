@@ -1,4 +1,7 @@
 Brewfile.*
+/cleardir
+src/*.c
+/*.c
 
 # Created by https://www.gitignore.io/api/python,venv,node
 # Edit at https://www.gitignore.io/?templates=python,venv,node
