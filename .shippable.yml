@@ -16,5 +16,5 @@ build:
     - apt-get install --yes build-essential
   ci:
     - make bootstrap
-    - make test
+    - make lint test
     - make install DESTDIR="${HOME}"

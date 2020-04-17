@@ -3,10 +3,11 @@
 
 MAKEFLAGS += --warn-undefined-variables
 DESTDIR ?= "$${HOME}/.bin"
+CC ?= cc
 
 .DEFAULT: all
 .PHONY: all
-all: bootstrap lint test
+all: bootstrap lint build test
 
 .PHONY: bootstrap
 bootstrap:
@@ -18,8 +19,8 @@ bootstrap:
 		|| mkvirtualenv venv
 	# install dependencies into existing or created virtual environment
 	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
-		pip3 install --upgrade pip setuptools \
-		&& pip3 install --requirement requirements.txt --requirement requirements-dev.txt \
+		pip install --upgrade pip setuptools \
+		&& pip install --requirement requirements.txt --requirement requirements-dev.txt \
 	;else exit 1; fi
 	npm install --prefix tests-cli
 
@@ -28,9 +29,18 @@ lint:
 	# TODO: remove this after it is implemented in-module for python2
 	# crude check that strip-hints work
 	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
-		strip-hints --to-empty src/main.py >/dev/null
+		strip-hints --to-empty src/main.py >/dev/null \
 	;else exit 1; fi
 	# TODO: lint tasks
+
+.PHONY: build
+build:
+	# TODO: try cython with -Wextra
+	# TODO: try warnings in clang
+	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
+		cython src/main.py --embed -3 --output-file src/main.c -Werror --no-docstrings \
+		&& $(CC) src/main.c -ocleardir -Os $$(pkg-config --libs --cflags python3) -lm -lutil -ldl -lpthread -lz -lexpat \
+	;else exit 1; fi
 
 .PHONY: test
 test:
@@ -42,11 +52,14 @@ test:
 	# TODO: test for python2
 	# TODO: test for python3 module
 
+	# TODO: test for cython executable
+	# TEST_COMMAND="./cleardir" npm run --prefix tests-cli test
+
 	# TODO: tests for installed executable
 	# if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
-	# 	pip3 uninstall cleardir \
-	# 	&& pip3 install . \
-	# 	&& TEST_COMMAND="$${VIRTUAL_ENV}/bin/cleardir" npm run --prefix tests-cli test
+	# 	pip uninstall cleardir \
+	# 	&& pip install . \
+	# 	&& TEST_COMMAND="$${VIRTUAL_ENV}/bin/cleardir" npm run --prefix tests-cli test \
 	# ;else exit 1; fi
 
 .PHONY: install

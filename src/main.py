@@ -37,8 +37,6 @@ def main(argv: List[str]) -> int:
     # TODO: add -i/--interactive flag (similar to `git clean -i`)
     # TODO: add -q/--quiet flag
     # TODO: add -V/--version flag (probably after first deployment)
-    # TODO: add -k,--keep flag to keep certain files
-    # TODO: add -a,--add flag to add additional files for deletion
     args = parser.parse_args(argv)
 
     # if args.verbose and args.quiet:
@@ -129,11 +127,12 @@ def find_files(dir: str) -> Iterable[str]:
             'ehthumbs_vista.db',  # Windows
             '[D|d]esktop.ini',  # Windows
         ]
-        delete_files = (['-name', x, '-type', 'f'] for x in delete_files)
+        delete_files2 = (['-name', x, '-type', 'f'] for x in delete_files)
         delete_folders = [
             'dist',  # default dist folder
             'node_modules',  # npm, yarn
             'bower_components',  # bower
+            'build',  # generic build folder
             '.build',  # swift package manager
             'Pods',  # cocoapods (obj-c, swift)
             'Carthage',  # carthage (obj-c, swift)
@@ -143,16 +142,16 @@ def find_files(dir: str) -> Iterable[str]:
             '.venv',  # python (virtualenv, pyenv)
         ]
         # TODO: consider .Trash, .Trashes, .Trash-*
-        delete_folders = (['-name', x, '-type', 'd', '-prune'] for x in delete_folders)
-        delete_all = functools.reduce(lambda all, el: all + ['-or'] + el, itertools.chain(delete_folders, delete_files))
+        delete_folders2 = (['-name', x, '-type', 'd', '-prune'] for x in delete_folders)
+        delete_all = functools.reduce(lambda all, el: all + ['-or'] + el, itertools.chain(delete_folders2, delete_files2))
 
         ignored_folders = [
             '.git',
             '.hg',
             '.svn',
         ]
-        ignored_folders = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
-        ignored_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders)
+        ignored_folders2 = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
+        ignored_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders2)
 
         return ['find', dir, '-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
 
