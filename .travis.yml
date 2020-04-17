@@ -24,5 +24,5 @@ install:
   - make bootstrap
 
 script:
-  - make lint test
+  - make lint build test
   - make install DESTDIR="${HOME}"
