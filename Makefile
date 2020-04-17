@@ -18,8 +18,8 @@ bootstrap:
 		|| mkvirtualenv venv
 	# install dependencies into existing or created virtual environment
 	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
-		pip3 install --upgrade pip setuptools \
-		&& pip3 install --requirement requirements.txt --requirement requirements-dev.txt \
+		pip install --upgrade pip setuptools \
+		&& pip install --requirement requirements.txt --requirement requirements-dev.txt \
 	;else exit 1; fi
 	npm install --prefix tests-cli
 
@@ -55,8 +55,8 @@ test:
 
 	# TODO: tests for installed executable
 	# if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
-	# 	pip3 uninstall cleardir \
-	# 	&& pip3 install . \
+	# 	pip uninstall cleardir \
+	# 	&& pip install . \
 	# 	&& TEST_COMMAND="$${VIRTUAL_ENV}/bin/cleardir" npm run --prefix tests-cli test \
 	# ;else exit 1; fi
 
