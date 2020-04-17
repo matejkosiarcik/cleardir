@@ -132,6 +132,7 @@ def find_files(dir: str) -> Iterable[str]:
             'dist',  # default dist folder
             'node_modules',  # npm, yarn
             'bower_components',  # bower
+            'build',  # generic build folder
             '.build',  # swift package manager
             'Pods',  # cocoapods (obj-c, swift)
             'Carthage',  # carthage (obj-c, swift)
