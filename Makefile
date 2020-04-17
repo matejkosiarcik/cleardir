@@ -28,7 +28,7 @@ lint:
 	# TODO: remove this after it is implemented in-module for python2
 	# crude check that strip-hints work
 	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
-		strip-hints --to-empty src/main.py >/dev/null
+		strip-hints --to-empty src/main.py >/dev/null \
 	;else exit 1; fi
 	# TODO: lint tasks
 
@@ -57,7 +57,7 @@ test:
 	# if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
 	# 	pip3 uninstall cleardir \
 	# 	&& pip3 install . \
-	# 	&& TEST_COMMAND="$${VIRTUAL_ENV}/bin/cleardir" npm run --prefix tests-cli test
+	# 	&& TEST_COMMAND="$${VIRTUAL_ENV}/bin/cleardir" npm run --prefix tests-cli test \
 	# ;else exit 1; fi
 
 .PHONY: install
