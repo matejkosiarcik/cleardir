@@ -6,7 +6,7 @@ DESTDIR ?= "$${HOME}/.bin"
 
 .DEFAULT: all
 .PHONY: all
-all: bootstrap lint test
+all: bootstrap lint build test
 
 .PHONY: bootstrap
 bootstrap:
@@ -32,6 +32,14 @@ lint:
 	;else exit 1; fi
 	# TODO: lint tasks
 
+.PHONY: build
+build:
+	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
+		cython src/main.py --embed -3 --output-file src/main.c \
+	;else exit 1; fi
+	# Below command works on my current macOS system, clean up before adapting
+	# clang src/main.c -o cleardir -Os -I /usr/local/Cellar/python@3.8/3.8.2/Frameworks/Python.framework/Versions/3.8/include/python3.8 -L/usr/local/Cellar/python@3.8/3.8.2/Frameworks/Python.framework/Versions/3.8/lib -lpython3.8 -lpthread -lm -lutil -ldl
+
 .PHONY: test
 test:
 	! npm run --prefix tests-cli test >/dev/null 2>&1
@@ -41,6 +49,9 @@ test:
 	TEST_COMMAND="python3 src/main.py" npm run --prefix tests-cli test
 	# TODO: test for python2
 	# TODO: test for python3 module
+
+	# TODO: test for cython executable
+	# TEST_COMMAND="./cleardir" npm run --prefix tests-cli test
 
 	# TODO: tests for installed executable
 	# if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
