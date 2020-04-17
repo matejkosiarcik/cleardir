@@ -63,5 +63,4 @@ optional arguments:
 - [ ] Replace shell `find` with pure python
 - [ ] Consider docker
 - [ ] Interactive mode
-- [ ] Add flag to specify paths which not to delete
 - [ ] Use `dot_clean` where available

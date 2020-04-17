@@ -37,8 +37,6 @@ def main(argv: List[str]) -> int:
     # TODO: add -i/--interactive flag (similar to `git clean -i`)
     # TODO: add -q/--quiet flag
     # TODO: add -V/--version flag (probably after first deployment)
-    # TODO: add -k,--keep flag to keep certain files
-    # TODO: add -a,--add flag to add additional files for deletion
     args = parser.parse_args(argv)
 
     # if args.verbose and args.quiet:
