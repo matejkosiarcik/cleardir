@@ -3,6 +3,7 @@
 
 MAKEFLAGS += --warn-undefined-variables
 DESTDIR ?= "$${HOME}/.bin"
+CC ?= cc
 
 .DEFAULT: all
 .PHONY: all
@@ -34,11 +35,12 @@ lint:
 
 .PHONY: build
 build:
+	# TODO: try cython with -Wextra
+	# TODO: try warnings in clang
 	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
-		cython src/main.py --embed -3 --output-file src/main.c \
+		cython src/main.py --embed -3 --output-file src/main.c -Werror --no-docstrings \
+		&& $(CC) src/main.c -ocleardir -Os $$(pkg-config --libs --cflags python3) -lm -lutil -ldl -lpthread -lz -lexpat \
 	;else exit 1; fi
-	# Below command works on my current macOS system, clean up before adapting
-	# clang src/main.c -o cleardir -Os -I /usr/local/Cellar/python@3.8/3.8.2/Frameworks/Python.framework/Versions/3.8/include/python3.8 -L/usr/local/Cellar/python@3.8/3.8.2/Frameworks/Python.framework/Versions/3.8/lib -lpython3.8 -lpthread -lm -lutil -ldl
 
 .PHONY: test
 test:
