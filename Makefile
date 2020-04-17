@@ -39,8 +39,9 @@ build:
 	# TODO: try warnings in clang
 	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
 		cython src/main.py --embed -3 --output-file src/main.c -Werror --no-docstrings \
-		&& $(CC) src/main.c -ocleardir -Os $$(pkg-config --libs --cflags python3) -lm -lutil -ldl -lpthread -lz -lexpat \
 	;else exit 1; fi
+	# $(CC) src/main.c -ocleardir -Os -static $$(pkg-config --static --libs --cflags python3) -lm -lutil -ldl -lpthread -lz -lexpat
+	# python3-config --libs --cflags --ldflags
 
 .PHONY: test
 test:
