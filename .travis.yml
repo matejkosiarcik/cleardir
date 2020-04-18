@@ -12,13 +12,15 @@ addons:
       - python3-pip
       - python3-venv
       - python3-setuptools
+      - upx
   homebrew:
     update: true
+    packages:
+      - upx
 
 before_install:
   - uname -a
   - if [ "$(uname -s)" = 'Darwin' ]; then sw_vers; fi
-  - python3 --version
 
 install:
   - make bootstrap

@@ -13,8 +13,7 @@ python:
 build:
   pre_ci:
     - apt-get update --yes
-    - apt-get install --yes build-essential
+    - apt-get install --yes build-essential upx
   ci:
-    - make bootstrap
-    - make lint build test
+    - make bootstrap lint test
     - make install DESTDIR="${HOME}"
