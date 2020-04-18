@@ -35,28 +35,30 @@ lint:
 
 .PHONY: build
 build:
-	# TODO: try cython with -Wextra
-	# TODO: try warnings in clang
+	rm -rf dist
 	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
-		cython src/main.py --embed -3 --output-file src/main.c -Werror --no-docstrings \
+		PYTHONOPTIMIZE=2 pyinstaller src/main.py --onefile --noconfirm --clean \
 	;else exit 1; fi
-	# $(CC) src/main.c -ocleardir -Os -static $$(pkg-config --static --libs --cflags python3) -lm -lutil -ldl -lpthread -lz -lexpat
-	# python3-config --libs --cflags --ldflags
+	mv dist/main dist/cleardir
 
 .PHONY: test
 test:
+	# test that tests fail with no source
 	! npm run --prefix tests-cli test >/dev/null 2>&1
 	! TEST_COMMAND= npm run --prefix tests-cli test >/dev/null 2>&1
 	! TEST_COMMAND=placeholder npm run --prefix tests-cli test >/dev/null 2>&1
 
+	# main tests
 	TEST_COMMAND="python3 src/main.py" npm run --prefix tests-cli test
 	# TODO: test for python2
 	# TODO: test for python3 module
 
-	# TODO: test for cython executable
-	# TEST_COMMAND="./cleardir" npm run --prefix tests-cli test
+	# test compiled executables
+	if [ -d dist ]; then \
+		TEST_COMMAND="./dist/cleardir" npm run --prefix tests-cli test \
+	;fi
 
-	# TODO: tests for installed executable
+	# TODO: tests for installed executable via setup.py/pip
 	# if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
 	# 	pip uninstall cleardir \
 	# 	&& pip install . \
