@@ -12,10 +12,15 @@ commands:
           command: |
             if command -v apt-get >/dev/null 2>&1; then apt-get update --yes; fi
             if command -v apk >/dev/null 2>&1; then apk update --no-cache; fi
+            if command -v yum >/dev/null 2>&1; then command -v dnf >/dev/null 2>&1 || yum install -y dnf; fi
   main:
     steps:
       - run: make bootstrap lint build test
       - run: make install DESTDIR="${HOME}"
+  redhat-bootstrap:
+    steps:
+      - run: dnf install -y gcc-c++ make findutils python3 python3-pip python3-setuptools sudo
+      - run: curl -sL https://rpm.nodesource.com/setup_13.x | sudo -E bash - && dnf install -y nodejs
 
 workflows:
   version: 2
@@ -34,6 +39,7 @@ workflows:
       - alpine: { tag: edge }
 
       - fedora: { tag: latest }
+      - centos: { tag: latest }
 
 jobs:
   debian:
@@ -66,6 +72,16 @@ jobs:
       - image: "fedora:<< parameters.tag >>"
     steps:
       - prepare
-      - run: dnf install -y gcc-c++ make findutils python3 python3-pip python3-setuptools upx
-      - run: curl -sL https://rpm.nodesource.com/setup_13.x | sudo -E bash - && dnf install -y nodejs
+      - redhat-bootstrap
+      - run: dnf install -y upx
+      - main
+  centos:
+    parameters:
+      tag:
+        type: string
+    docker:
+      - image: "centos:<< parameters.tag >>"
+    steps:
+      - prepare
+      - redhat-bootstrap
       - main
