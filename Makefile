@@ -11,6 +11,9 @@ all: bootstrap lint build test
 
 .PHONY: bootstrap
 bootstrap:
+	if [ "$$(uname -s)" = Darwin ] && command -v brew >/dev/null 2>&1; then \
+		brew bundle \
+	;fi
 	# check if virtual environment exists or create it
 	[ -n "$${VIRTUAL_ENV+x}" ] || [ -d venv ] \
 		|| python3 -m venv venv \

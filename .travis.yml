@@ -15,8 +15,7 @@ addons:
       - upx
   homebrew:
     update: true
-    packages:
-      - upx
+    brewfile: true
 
 before_install:
   - uname -a
