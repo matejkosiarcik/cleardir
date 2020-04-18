@@ -66,7 +66,6 @@ jobs:
       - image: "fedora:<< parameters.tag >>"
     steps:
       - prepare
-      - run: dnf install -y gcc-c++ make python3 python3-pip python3-setuptools upx
+      - run: dnf install -y gcc-c++ make findutils python3 python3-pip python3-setuptools upx
       - run: curl -sL https://rpm.nodesource.com/setup_13.x | sudo -E bash - && dnf install -y nodejs
-      - run: make bootstrap lint src-test install-test # TODO: `make build` on alpine
-      - run: make install DESTDIR="${HOME}"
+      - main
