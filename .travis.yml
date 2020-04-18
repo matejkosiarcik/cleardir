@@ -22,9 +22,8 @@ before_install:
   - uname -a
   - if [ "$(uname -s)" = 'Darwin' ]; then sw_vers; fi
 
-install:
-  - make bootstrap
+install: skip
 
 script:
-  - make lint build test
+  - make bootstrap lint build test
   - make install DESTDIR="${HOME}"

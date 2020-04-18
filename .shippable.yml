@@ -15,5 +15,5 @@ build:
     - apt-get update --yes
     - apt-get install --yes build-essential upx
   ci:
-    - make bootstrap lint test
+    - make bootstrap lint src-test install-test
     - make install DESTDIR="${HOME}"
