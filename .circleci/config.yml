@@ -34,8 +34,7 @@ workflows:
       - alpine: { tag: latest }
       - alpine: { tag: edge }
 
-      - redhat: { tag: fedora:latest }
-      - redhat: { tag: centos:latest }
+      - fedora: { tag: latest }
 
 jobs:
   debian:
@@ -60,15 +59,14 @@ jobs:
       - run: apk add --no-cache alpine-sdk bash nodejs npm python3 python3-dev py3-virtualenv upx
       - run: make bootstrap lint src-test install-test # TODO: `make build` on alpine
       - run: make install DESTDIR="${HOME}"
-  redhat:
+  fedora:
     parameters:
-      image:
+      tag:
         type: string
     docker:
-      - image: "<< parameters.image >>"
+      - image: "fedora:<< parameters.tag >>"
     steps:
       - prepare
-      - run: dnf install -y gcc-c++ make findutils python3 python3-pip python3-setuptools sudo
-      - run: dnf install -y upx || true
+      - run: dnf install -y gcc-c++ make findutils python3 python3-pip python3-setuptools sudo upx
       - run: curl -sL https://rpm.nodesource.com/setup_13.x | sudo -E bash - && dnf install -y nodejs
       - main
