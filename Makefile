@@ -3,7 +3,8 @@
 
 MAKEFLAGS += --warn-undefined-variables
 DESTDIR ?= "$${HOME}/.bin"
-CC ?= cc
+SHELL := /bin/sh
+.SHELLFLAGS := -ec
 
 .DEFAULT: all
 .PHONY: all
@@ -47,9 +48,9 @@ build:
 .PHONY: test
 test: src-test build-test install-test
 	# test that tests fail when no source
-	! npm run --prefix tests-cli test >/dev/null 2>&1
-	! TEST_COMMAND= npm run --prefix tests-cli test >/dev/null 2>&1
-	! TEST_COMMAND=placeholder npm run --prefix tests-cli test >/dev/null 2>&1
+	! (npm run --prefix tests-cli test >/dev/null 2>&1)
+	! (TEST_COMMAND= npm run --prefix tests-cli test >/dev/null 2>&1)
+	! (TEST_COMMAND=placeholder npm run --prefix tests-cli test >/dev/null 2>&1)
 
 .PHONY: src-test
 src-test:
