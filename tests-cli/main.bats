@@ -129,6 +129,52 @@ function setup() {
     rm -rf "${tmpdir}"
 }
 
+@test 'Not deleting files (interactive - no)' {
+    # given
+    tmpdir="$(mktemp -d)"
+    mkdir "${tmpdir}/node_modules"
+    mkdir "${tmpdir}/foo"
+
+    workdir="$(mktemp -d)"
+    no_file="${workdir}/yes"
+    mkfifo "${no_file}"
+    yes n >"${no_file}" &
+
+    # when
+    run ${TEST_COMMAND} "${tmpdir}" --interactive <"${no_file}"
+
+    # then
+    [ "${status}" -eq 0 ]
+    test_output 1
+    test_files "${tmpdir}" 2
+
+    # cleanup
+    rm -rf "${tmpdir}"
+}
+
+@test 'Deleting junk files' {
+    # given
+    tmpdir="$(mktemp -d)"
+    touch "${tmpdir}/.DS_Store"
+    mkdir "${tmpdir}/node_modules"
+
+    workdir="$(mktemp -d)"
+    yes_file="${workdir}/yes"
+    mkfifo "${yes_file}"
+    yes y >"${yes_file}" &
+
+    # when
+    run ${TEST_COMMAND} -i "${tmpdir}" <"${yes_file}"
+
+    # then
+    [ "${status}" -eq 0 ]
+    test_output 2
+    test_files "${tmpdir}" 0
+
+    # cleanup
+    rm -rf "${tmpdir}"
+}
+
 @test 'Not looking into nested junk directories' {
     # given
     tmpdir="$(mktemp -d)"
