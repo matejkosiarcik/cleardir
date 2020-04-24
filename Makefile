@@ -54,13 +54,13 @@ test: src-test install-test
 .PHONY: src-test
 src-test:
 	# test that tests fail when no source
-	! (npm run --prefix tests-cli test >/dev/null 2>&1)
-	! (TEST_COMMAND= npm run --prefix tests-cli test >/dev/null 2>&1)
-	! (TEST_COMMAND=placeholder npm run --prefix tests-cli test >/dev/null 2>&1)
+	! (npm test --prefix tests-cli >/dev/null 2>&1)
+	! (TEST_COMMAND= npm test --prefix tests-cli >/dev/null 2>&1)
+	! (TEST_COMMAND=placeholder npm test --prefix tests-cli >/dev/null 2>&1)
 
 	# main tests
 	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
-		TEST_COMMAND="python src/main.py" npm run --prefix tests-cli test \
+		TEST_COMMAND="python src/main.py" npm test --prefix tests-cli \
 	;else exit 1; fi
 	# TODO: test for python2
 	# TODO: test for python3 module
@@ -71,17 +71,17 @@ install-test:
 	# if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
 	# 	pip uninstall cleardir \
 	# 	&& pip install . \
-	# 	&& TEST_COMMAND="$${VIRTUAL_ENV}/bin/cleardir" npm run --prefix tests-cli test \
+	# 	&& TEST_COMMAND="$${VIRTUAL_ENV}/bin/cleardir" npm test --prefix tests-cli \
 	# ;else exit 1; fi
 
 .PHONY: build-test
 build-test:
-	TEST_COMMAND="./dist/cleardir" npm run --prefix tests-cli test
+	TEST_COMMAND="./dist/cleardir" npm test --prefix tests-cli
 
 .PHONY: system-test
 system-test:
 	command -v cleardir
-	TEST_COMMAND="cleardir" npm run --prefix tests-cli test
+	TEST_COMMAND="cleardir" npm test --prefix tests-cli
 
 .PHONY: install
 install:
