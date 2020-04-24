@@ -22,27 +22,20 @@ workflows:
   version: 2
   test:
     jobs:
-      - debian: { image: ubuntu:latest }
-      - debian: { image: ubuntu:rolling }
-
-      - debian: { image: debian:latest }
-      - debian: { image: debian:stable }
-      - debian: { image: debian:stable-slim }
-      - debian: { image: debian:oldstable }
-      - debian: { image: debian:oldstable-slim }
-
-      - alpine: { tag: latest }
-      - alpine: { tag: edge }
-
+      - debian: { matrix: { parameters: { base: [ ubuntu ], tag: [ latest, rolling ] }}}
+      - debian: { matrix: { parameters: { base: [ debian ], tag: [ latest, stable, stable-slim, oldstable, oldstable-slim ] }}}
+      - alpine: { matrix: { parameters: { tag: [ latest, edge ] }}}
       - fedora: { tag: latest }
 
 jobs:
   debian:
     parameters:
-      image:
+      base:
+        type: string
+      tag:
         type: string
     docker:
-      - image: "<< parameters.image >>"
+      - image: "<< parameters.base >>:<< parameters.tag >>"
     steps:
       - prepare
       - run: apt-get install --yes build-essential curl python3 python3-pip python3-venv python3-setuptools upx
