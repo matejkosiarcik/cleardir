@@ -2,8 +2,8 @@ Brewfile.*
 src/*.c
 /*.c
 
-# Created by https://www.gitignore.io/api/node,python,pydev,venv,virtualenv,c,c++,jetbrains+all,visualstudiocode,sublimetext,emacs,vim,macos,linux,windows
-# Edit at https://www.gitignore.io/?templates=node,python,pydev,venv,virtualenv,c,c++,jetbrains+all,visualstudiocode,sublimetext,emacs,vim,macos,linux,windows
+# Created by https://www.gitignore.io/api/node,python,pydev,venv,virtualenv,c,c++,executable,jetbrains+all,visualstudiocode,sublimetext,emacs,vim,macos,linux,windows
+# Edit at https://www.gitignore.io/?templates=node,python,pydev,venv,virtualenv,c,c++,executable,jetbrains+all,visualstudiocode,sublimetext,emacs,vim,macos,linux,windows
 
 ### C ###
 # Prerequisites
@@ -128,6 +128,16 @@ flycheck_*.el
 # network security
 /network-security.data
 
+
+### Executable ###
+*.bat
+*.cgi
+*.com
+*.gadget
+*.jar
+*.pif
+*.vb
+*.wsf
 
 ### JetBrains+all ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
@@ -575,4 +585,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.gitignore.io/api/node,python,pydev,venv,virtualenv,c,c++,jetbrains+all,visualstudiocode,sublimetext,emacs,vim,macos,linux,windows
+# End of https://www.gitignore.io/api/node,python,pydev,venv,virtualenv,c,c++,executable,jetbrains+all,visualstudiocode,sublimetext,emacs,vim,macos,linux,windows
