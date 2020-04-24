@@ -17,15 +17,21 @@ commands:
     steps:
       - run: make all
       - run: make install DESTDIR="${HOME}"
+  unit:
+    steps:
+      - run: make unit
+      - run: make install DESTDIR="${HOME}"
 
 workflows:
   version: 2
   test:
     jobs:
-      - debian: { matrix: { parameters: { base: [ ubuntu ], tag: [ latest, rolling ] }}}
+      - debian: { matrix: { parameters: { base: [ ubuntu ], tag: [ latest, rolling, "16.04", "18.04", "20.04" ] }}}
       - debian: { matrix: { parameters: { base: [ debian ], tag: [ latest, stable, stable-slim, oldstable, oldstable-slim ] }}}
-      - alpine: { matrix: { parameters: { tag: [ latest, edge ] }}}
+      - debian: { matrix: { parameters: { base: [ elementary/docker ], tag: [ stable, unstable ] }}}
+      - alpine: { matrix: { parameters: { tag: [ latest, edge, "3.11", "3.10" ] }}}
       - fedora: { tag: latest }
+      - python3: { matrix: { parameters: { tag: [ rc, "3", "3.8", "3.7", "3.6", "3.5", "3.4" ] }}}
 
 jobs:
   debian:
@@ -50,8 +56,7 @@ jobs:
     steps:
       - prepare
       - run: apk add --no-cache alpine-sdk bash nodejs npm python3 python3-dev py3-virtualenv upx
-      - run: make unit # TODO: build on alpine
-      - run: make install DESTDIR="${HOME}"
+      - unit # TODO: build on alpine
   fedora:
     parameters:
       tag:
@@ -63,3 +68,14 @@ jobs:
       - run: dnf install -y gcc-c++ make findutils python3 python3-pip python3-setuptools sudo upx
       - run: curl -sL https://rpm.nodesource.com/setup_13.x | sudo -E bash - && dnf install -y nodejs
       - main
+  python3:
+    parameters:
+      tag:
+        type: string
+    docker:
+      - image: "python:<< parameters.tag >>-slim"
+    steps:
+      - prepare
+      - run: apt-get install --yes build-essential curl
+      - run: curl -sL https://deb.nodesource.com/setup_13.x | bash - && apt-get install --yes nodejs
+      - unit
