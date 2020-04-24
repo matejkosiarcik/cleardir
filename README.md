@@ -59,9 +59,7 @@ optional arguments:
 ## Current milestones
 
 - [ ] Improve testing (pytest)
-- [ ] Add install script
+- [ ] Add setup.py
 - [ ] Release on pypi/brew
-- [ ] Compile to native executable
 - [ ] Replace shell `find` with pure python
-- [ ] Consider docker
 - [ ] Use `dot_clean` where available
