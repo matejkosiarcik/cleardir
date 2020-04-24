@@ -15,7 +15,7 @@ commands:
             if command -v yum >/dev/null 2>&1; then command -v dnf >/dev/null 2>&1 || yum install -y dnf; fi
   main:
     steps:
-      - run: make bootstrap lint build test
+      - run: make all
       - run: make install DESTDIR="${HOME}"
 
 workflows:
@@ -50,7 +50,7 @@ jobs:
     steps:
       - prepare
       - run: apk add --no-cache alpine-sdk bash nodejs npm python3 python3-dev py3-virtualenv upx
-      - run: make bootstrap lint src-test install-test # TODO: `make build` on alpine
+      - run: make unit # TODO: build on alpine
       - run: make install DESTDIR="${HOME}"
   fedora:
     parameters:
