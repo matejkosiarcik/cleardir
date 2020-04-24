@@ -42,16 +42,18 @@ The list of all options:
 
 ```txt
 $ cleardir --help
-usage: cleardir [-h] [-n] [-f] [-v] [paths [paths ...]]
+usage: cleardir [-h] [-n] [-f] [-i] [-v] [paths [paths ...]]
 
 positional arguments:
-  paths          directories to clear (also accepts filepaths)
+  paths              directories to clear (also accepts filepaths)
 
 optional arguments:
-  -h, --help     show this help message and exit
-  -n, --dry-run  do not remove files, only print what would be deleted
-  -f, --force    actually perform file/directory removal
-  -v, --verbose  additional logging output
+  -h, --help         show this help message and exit
+  -n, --dry-run      do not remove files, only print what would be deleted
+  -f, --force        force remove all matching files
+  -i, --interactive  work in interactive mode (ask user for each file whether
+                     to remove it or not)
+  -v, --verbose      additional logging output
 ```
 
 ## Current milestones
@@ -62,5 +64,4 @@ optional arguments:
 - [ ] Compile to native executable
 - [ ] Replace shell `find` with pure python
 - [ ] Consider docker
-- [ ] Interactive mode
 - [ ] Use `dot_clean` where available

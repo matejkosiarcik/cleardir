@@ -15,34 +15,27 @@ commands:
             if command -v yum >/dev/null 2>&1; then command -v dnf >/dev/null 2>&1 || yum install -y dnf; fi
   main:
     steps:
-      - run: make bootstrap lint build test
+      - run: make all
       - run: make install DESTDIR="${HOME}"
 
 workflows:
   version: 2
   test:
     jobs:
-      - debian: { image: ubuntu:latest }
-      - debian: { image: ubuntu:rolling }
-
-      - debian: { image: debian:latest }
-      - debian: { image: debian:stable }
-      - debian: { image: debian:stable-slim }
-      - debian: { image: debian:oldstable }
-      - debian: { image: debian:oldstable-slim }
-
-      - alpine: { tag: latest }
-      - alpine: { tag: edge }
-
+      - debian: { matrix: { parameters: { base: [ ubuntu ], tag: [ latest, rolling ] }}}
+      - debian: { matrix: { parameters: { base: [ debian ], tag: [ latest, stable, stable-slim, oldstable, oldstable-slim ] }}}
+      - alpine: { matrix: { parameters: { tag: [ latest, edge ] }}}
       - fedora: { tag: latest }
 
 jobs:
   debian:
     parameters:
-      image:
+      base:
+        type: string
+      tag:
         type: string
     docker:
-      - image: "<< parameters.image >>"
+      - image: "<< parameters.base >>:<< parameters.tag >>"
     steps:
       - prepare
       - run: apt-get install --yes build-essential curl python3 python3-pip python3-venv python3-setuptools upx
@@ -57,7 +50,7 @@ jobs:
     steps:
       - prepare
       - run: apk add --no-cache alpine-sdk bash nodejs npm python3 python3-dev py3-virtualenv upx
-      - run: make bootstrap lint src-test install-test # TODO: `make build` on alpine
+      - run: make unit # TODO: build on alpine
       - run: make install DESTDIR="${HOME}"
   fedora:
     parameters:

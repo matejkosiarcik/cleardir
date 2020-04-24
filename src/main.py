@@ -29,12 +29,13 @@ def main(argv: List[str]) -> int:
     parser.add_argument('-n', '--dry-run', action='store_true',
                         help='do not remove files, only print what would be deleted')
     parser.add_argument('-f', '--force', action='store_true',
-                        help='actually perform file/directory removal')
+                        help='force remove all matching files')
+    parser.add_argument('-i', '--interactive', action='store_true',
+                        help='work in interactive mode (ask user for each file whether to remove it or not)')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='additional logging output')
     parser.add_argument('paths', nargs='*', help='directories to clear (also accepts filepaths)')
     parser.prog = 'cleardir'
-    # TODO: add -i/--interactive flag (similar to `git clean -i`)
     # TODO: add -q/--quiet flag
     # TODO: add -V/--version flag (probably after first deployment)
     args = parser.parse_args(argv)
@@ -48,13 +49,15 @@ def main(argv: List[str]) -> int:
         mode = Mode.DRY_RUN
     elif args.force:
         mode = Mode.FORCE
+    elif args.interactive:
+        mode = Mode.INTERACTIVE
 
     if mode is None:
-        print('Must pass either --force or --dry-run', file=sys.stderr)
+        print('Must pass either of --dry-run/--interactive/--force', file=sys.stderr)
         sys.exit(1)
 
-    if sum(1 if x else 0 for x in [args.dry_run, args.force]) > 1:
-        print('--force and --dry-run are mutually exclusive', file=sys.stderr)
+    if sum(1 if x else 0 for x in [args.dry_run, args.force, args.interactive]) > 1:
+        print('--dry-run/--interactive/--force are mutually exclusive', file=sys.stderr)
         sys.exit(1)
 
     # setup logging
@@ -90,26 +93,33 @@ def process_directory(directory: str, mode: Mode):
         if mode == Mode.DRY_RUN:
             print('Would remove %s' % file)
         elif mode == Mode.FORCE:
-            print('Removing %s' % file)
             try:
                 delete(file)
             except FileNotFoundError:
                 pass
         elif mode == Mode.INTERACTIVE:
-            raise NotImplementedError('Interactive mode not yet implemented')
+            user_input = input('Remove %s? [y|n]: ' % file)
+            while not user_input.lower() in ['y', 'n']:
+                user_input = input('Not recognized. Remove %s? [y|n]: ' % file)
+            if user_input.lower() == 'y':
+                try:
+                    delete(file)
+                except FileNotFoundError:
+                    pass
 
     log.info('Processed %s' % directory)
 
 
 # deletes file(or folder/symlink) from filesystem
-def delete(entry: str):
-    path = os.path.realpath(entry)
+def delete(file: str):
+    print('Removing %s' % file)
+    path = os.path.realpath(file)
     if os.path.isdir(path):
-        shutil.rmtree(entry)
+        shutil.rmtree(file)
     elif os.path.isfile(path):
-        os.remove(entry)
+        os.remove(file)
     else:
-        raise FileNotFoundError('file "%s" not exists' % entry)
+        raise FileNotFoundError('file "%s" not exists' % file)
 
 
 def find_files(dir: str) -> Iterable[str]:
