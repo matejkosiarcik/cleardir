@@ -27,8 +27,8 @@ bootstrap:
 		|| mkvirtualenv venv
 	# install dependencies into existing or created virtual environment
 	if $(ACTIVATE_VENV); then \
-		pip install --upgrade pip setuptools \
-		&& pip install --requirement requirements.txt --requirement requirements-dev.txt \
+		python -m pip install --upgrade pip setuptools wheel \
+		&& python -m pip install --requirement requirements.txt --requirement requirements-dev.txt \
 	;else exit 1; fi
 	npm install --prefix tests-cli
 
@@ -70,8 +70,8 @@ src-test:
 install-test:
 	# TODO: tests for installed executable via setup.py/pip
 	# if $(ACTIVATE_VENV); then \
-	# 	pip uninstall cleardir \
-	# 	&& pip install . \
+	# 	python -m pip uninstall cleardir \
+	# 	&& python -m pip install . \
 	# 	&& TEST_COMMAND="$${VIRTUAL_ENV}/bin/cleardir" npm test --prefix tests-cli \
 	# ;else exit 1; fi
 
