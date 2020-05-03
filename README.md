@@ -61,5 +61,5 @@ optional arguments:
 - [ ] Improve testing (pytest)
 - [ ] Add setup.py
 - [ ] Release on pypi/brew
-- [ ] Replace shell `find` with pure python
+- [ ] Replace shell `find` with pure python (based on `os.walkdir` or `os.scandir`, or some 3rd party library (such as `find` on pypi))
 - [ ] Use `dot_clean` where available
