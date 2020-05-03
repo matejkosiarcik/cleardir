@@ -5,6 +5,7 @@ MAKEFLAGS += --warn-undefined-variables
 DESTDIR ?= "$${HOME}/.bin"
 SHELL := /bin/sh
 .SHELLFLAGS := -ec
+ACTIVATE_VENV := [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate
 
 .DEFAULT: all
 .PHONY: all
@@ -25,7 +26,7 @@ bootstrap:
 		|| virtualenv venv \
 		|| mkvirtualenv venv
 	# install dependencies into existing or created virtual environment
-	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
+	if $(ACTIVATE_VENV); then \
 		pip install --upgrade pip setuptools \
 		&& pip install --requirement requirements.txt --requirement requirements-dev.txt \
 	;else exit 1; fi
@@ -35,7 +36,7 @@ bootstrap:
 lint:
 	# TODO: remove this after it is implemented in-module for python2
 	# crude check that strip-hints work
-	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
+	if $(ACTIVATE_VENV); then \
 		strip-hints --to-empty src/main.py >/dev/null \
 	;else exit 1; fi
 	# TODO: lint tasks
@@ -43,7 +44,7 @@ lint:
 .PHONY: build
 build:
 	rm -rf dist
-	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
+	if $(ACTIVATE_VENV); then \
 		PYTHONOPTIMIZE=2 pyinstaller src/main.py --onefile --noconfirm --clean \
 	;else exit 1; fi
 	mv dist/main dist/cleardir
@@ -59,7 +60,7 @@ src-test:
 	! (TEST_COMMAND=placeholder npm test --prefix tests-cli >/dev/null 2>&1)
 
 	# main tests
-	if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
+	if $(ACTIVATE_VENV); then \
 		TEST_COMMAND="python src/main.py" npm test --prefix tests-cli \
 	;else exit 1; fi
 	# TODO: test for python2
@@ -68,7 +69,7 @@ src-test:
 .PHONY: install-test
 install-test:
 	# TODO: tests for installed executable via setup.py/pip
-	# if [ -n "$${VIRTUAL_ENV+x}" ] || . venv/bin/activate; then \
+	# if $(ACTIVATE_VENV); then \
 	# 	pip uninstall cleardir \
 	# 	&& pip install . \
 	# 	&& TEST_COMMAND="$${VIRTUAL_ENV}/bin/cleardir" npm test --prefix tests-cli \
