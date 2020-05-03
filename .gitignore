@@ -586,5 +586,3 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/node,python,pydev,venv,virtualenv,c,c++,executable,jetbrains+all,visualstudiocode,sublimetext,emacs,vim,macos,linux,windows
-
-!.*-version
