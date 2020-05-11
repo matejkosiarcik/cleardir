@@ -1,11 +1,12 @@
 language: python
 
+# for some reason some versions can't boot
 python:
-  - "3.8"
+  # - "3.8"
   - "3.7"
-  - "3.6"
+  # - "3.6"
   - "3.5"
-  - "3.4"
+  # - "3.4"
   - pypy3
 
 build:
