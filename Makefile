@@ -40,7 +40,7 @@ lint:
 build:
 	rm -rf dist
 	if $(ACTIVATE_VENV); then \
-		PYTHONOPTIMIZE=2 pyinstaller src/main.py --onefile --noconfirm --clean \
+		PYTHONOPTIMIZE=2 pyinstaller cleardir/main.py --onefile --noconfirm --clean \
 	;else exit 1; fi
 	mv dist/main dist/cleardir
 
@@ -56,7 +56,7 @@ src-test:
 
 	# main tests
 	if $(ACTIVATE_VENV); then \
-		TEST_COMMAND="python src/main.py" npm test --prefix tests-cli \
+		TEST_COMMAND="python cleardir/main.py" npm test --prefix tests-cli \
 	;else exit 1; fi
 	# TODO: test for python2
 	# TODO: test for python3 module
@@ -83,5 +83,5 @@ system-test:
 install:
 	# TODO: replace with setup.py
 	rm -f "$(DESTDIR)/cleardir"
-	cp "$(CURDIR)/src/main.py" "$(DESTDIR)/cleardir"
+	cp "$(CURDIR)/cleardir/main.py" "$(DESTDIR)/cleardir"
 	chmod +x "$(DESTDIR)/cleardir"

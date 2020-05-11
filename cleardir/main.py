@@ -11,7 +11,7 @@ import os
 import subprocess
 import shutil
 import functools
-from typing import List, Iterable
+from typing import List, Iterable, Optional
 import logging
 import itertools
 import enum
@@ -24,7 +24,10 @@ class Mode(enum.Enum):
     INTERACTIVE = 2
 
 # Main function
-def main(argv: List[str]) -> int:
+def main(argv: Optional[List[str]]) -> int:
+    if argv is None:
+        argv = sys.argv[1:]
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--dry-run', action='store_true',
                         help='do not remove files, only print what would be deleted')
