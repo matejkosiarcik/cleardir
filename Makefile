@@ -34,11 +34,6 @@ bootstrap:
 
 .PHONY: lint
 lint:
-	# TODO: remove this after it is implemented in-module for python2
-	# crude check that strip-hints work
-	if $(ACTIVATE_VENV); then \
-		strip-hints --to-empty src/main.py >/dev/null \
-	;else exit 1; fi
 	# TODO: lint tasks
 
 .PHONY: build
