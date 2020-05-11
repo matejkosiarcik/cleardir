@@ -1,17 +1,21 @@
-language: python
+language: none
 
-python:
-  # - "3.8"
-  - "3.7"
-  # - "3.6"
-  - "3.5"
-  # - "3.4"
-  - pypy3
+env:
+  - PYTHON_VERSION=3.8
+  - PYTHON_VERSION=3.7
+  - PYTHON_VERSION=3.6
+  - PYTHON_VERSION=3.5
+  - PYTHON_VERSION=3.4
 
 build:
-  pre_ci:
-    - apt-get update --yes
-    - apt-get install --yes build-essential upx
+  pre_ci_boot:
+    image_name: ubuntu
+    image_tag: latest
+    pull: true
   ci:
+    - apt-get update --yes
+    - apt-get install --yes build-essential curl
+    - curl https://pyenv.run | bash
+    - python --version
     - make unit
     - make install DESTDIR="${HOME}"
