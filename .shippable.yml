@@ -1,17 +1,16 @@
 language: python
 
 python:
-  # - "3.8"
+  - "3.8"
   - "3.7"
-  # - "3.6"
+  - "3.6"
   - "3.5"
-  # - "3.4"
+  - "3.4"
   - pypy3
 
 build:
   pre_ci:
     - apt-get update --yes
-    - apt-get install --yes build-essential upx
   ci:
     - make unit
     - make install DESTDIR="${HOME}"
