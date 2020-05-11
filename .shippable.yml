@@ -15,9 +15,7 @@ build:
   ci:
     - apt-get update --yes
     - apt-get install --yes build-essential curl
-    - |
-      curl https://pyenv.run | bash
-      exec $SHELL
-      python --version
-      make unit
-    # - make install DESTDIR="${HOME}"
+    - curl https://pyenv.run | bash
+    - python --version
+    - make unit
+    - make install DESTDIR="${HOME}"
