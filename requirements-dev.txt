@@ -11,3 +11,7 @@ pylint
 # flake8
 # yapf
 # black
+
+# TODO: check these
+# py-bakwards
+# strip-hints
