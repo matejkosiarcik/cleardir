@@ -130,6 +130,10 @@ def delete(file: str):
 
 
 def find_files(directory: str) -> Iterable[str]:
+    depth_args = []
+    if os.path.isdir(os.path.realpath(directory)):
+        depth_args = ['-mindepth', '1']
+
     def find_command() -> Iterable[str]:
         # returns generic list of files to add to "find" command
         delete_files = [
@@ -170,7 +174,7 @@ def find_files(directory: str) -> Iterable[str]:
         ignored_folders2 = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
         ignored_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders2)
 
-        return ['find', directory, '-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
+        return ['find', directory] + depth_args + ['-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
 
     command = find_command()
     log.debug('Executing: %s', ' '.join(command))
