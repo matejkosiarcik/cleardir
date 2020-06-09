@@ -96,7 +96,7 @@ def process_directory(directory: str, mode: Mode):
 
     for file in find_files(directory):
         if mode == Mode.DRY_RUN:
-            print('Would remove %s' % file)
+            print('Would remove {}'.format(file))
         elif mode == Mode.FORCE:
             try:
                 delete(file)
@@ -117,14 +117,14 @@ def process_directory(directory: str, mode: Mode):
 
 # deletes file(or folder/symlink) from filesystem
 def delete(file: str):
-    print('Removing %s' % file)
+    print('Removing {}'.format(file))
     path = os.path.realpath(file)
     if os.path.isdir(path):
         shutil.rmtree(file)
     elif os.path.isfile(path):
         os.remove(file)
     else:
-        raise FileNotFoundError('file "%s" not exists' % file)
+        raise FileNotFoundError('file {} not exists'.format(file))
 
 
 def find_files(directory: str) -> Iterable[str]:
