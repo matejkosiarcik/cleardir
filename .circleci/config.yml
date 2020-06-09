@@ -26,6 +26,7 @@ workflows:
   version: 2
   test:
     jobs:
+      - azlint
       - debian: { matrix: { parameters: { base: [ ubuntu ], tag: [ latest, rolling, "16.04", "18.04", "20.04" ] }}}
       - debian: { matrix: { parameters: { base: [ debian ], tag: [ latest, stable, stable-slim, oldstable, oldstable-slim ] }}}
       - debian: { matrix: { parameters: { base: [ elementary/docker ], tag: [ stable, unstable ] }}}
@@ -34,6 +35,14 @@ workflows:
       - python3: { matrix: { parameters: { tag: [ rc, "3", "3.8", "3.7", "3.6", "3.5", "3.4" ] }}}
 
 jobs:
+  azlint:
+    docker:
+      - image: matejkosiarcik/azlint:latest
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: azlint
+
   debian:
     parameters:
       base:
