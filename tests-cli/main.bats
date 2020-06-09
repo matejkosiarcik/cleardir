@@ -154,7 +154,7 @@ function setup() {
     rm -rf "${tmpdir}"
 }
 
-@test 'Deleting junk files' {
+@test 'Deleting junk files (interactive)' {
     # given
     tmpdir="$(mktemp -d)"
     touch "${tmpdir}/.DS_Store"
