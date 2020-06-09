@@ -2,7 +2,6 @@
 
 load './helpers'
 # TODO: simplify file checking with bats libraries (bats-file/bats-support/bats-assert)
-# TODO: update bats
 
 function setup() {
     cd "${BATS_TEST_DIRNAME}/.."
@@ -10,176 +9,86 @@ function setup() {
         printf 'TEST_COMMAND not specified\n' >&3
         exit 2
     fi
+    export tmpdir="$(mktemp -d)"
 }
 
-@test 'Get help' {
-    run ${TEST_COMMAND} -h
-    [ "${status}" -eq 0 ]
-    [ "${output}" != '' ]
-    grep -i usage <<<"${output}"
-    grep -i 'usage: cleardir' <<<"${output}"
-
-    run ${TEST_COMMAND} --help
-    [ "${status}" -eq 0 ]
-    [ "${output}" != '' ]
-    grep -i usage <<<"${output}"
-    grep -i 'usage: cleardir' <<<"${output}"
-}
-
-@test 'Running without -f/-n' {
-    tmpdir="$(mktemp -d)"
-    run ${TEST_COMMAND} "${tmpdir}"
-    [ "${status}" -ne 0 ]
-    [ "${output}" != '' ]
-}
-
-@test 'Running with both -f/-n' {
-    tmpdir="$(mktemp -d)"
-    run ${TEST_COMMAND} -f -n "${tmpdir}"
-    [ "${status}" -ne 0 ]
-    [ "${output}" != '' ]
-
-    run ${TEST_COMMAND} -n -f "${tmpdir}"
-    [ "${status}" -ne 0 ]
-    [ "${output}" != '' ]
-
-    run ${TEST_COMMAND} --force -n "${tmpdir}"
-    [ "${status}" -ne 0 ]
-    [ "${output}" != '' ]
-}
-
-@test 'Deleting junk files' {
-    # given
-    tmpdir="$(mktemp -d)"
-    touch "${tmpdir}/.DS_Store"
-    mkdir "${tmpdir}/node_modules"
-
-    # when
-    run ${TEST_COMMAND} --force "${tmpdir}"
-
-    # then
-    [ "${status}" -eq 0 ]
-    test_output 2
-    test_files "${tmpdir}" 0
-
-    # cleanup
+function teardown() {
     rm -rf "${tmpdir}"
 }
 
-@test 'Not deleting other files' {
+@test 'Deleting files' {
     # given
-    tmpdir="$(mktemp -d)"
-    touch "${tmpdir}/bar"
-    mkdir "${tmpdir}/foo"
+    mkdir "${tmpdir}/node_modules"
+    touch "${tmpdir}/.DS_Store"
+    mkdir "${tmpdir}/dir"
+    touch "${tmpdir}/file"
 
     # when
     run ${TEST_COMMAND} -f "${tmpdir}"
 
     # then
     [ "${status}" -eq 0 ]
-    test_output 0
-    test_files "${tmpdir}" 2
-
-    # cleanup
-    rm -rf "${tmpdir}"
+    count_output 2
+    count_files 2
+    [ ! -e "${tmpdir}/node_modules" ]
+    [ ! -e "${tmpdir}/.DS_Store" ]
+    [ -d "${tmpdir}/dir" ]
+    [ -f "${tmpdir}/file" ]
 }
 
-@test 'Deleting only junk files' {
+@test 'Deleting nested' {
     # given
-    tmpdir="$(mktemp -d)"
-    touch "${tmpdir}/bar"
-    mkdir "${tmpdir}/foo"
-    touch "${tmpdir}/.DS_Store"
     mkdir "${tmpdir}/node_modules"
-    mkdir "${tmpdir}/venv"
+    mkdir "${tmpdir}/node_modules/dir"
+    mkdir "${tmpdir}/node_modules/node_modules"
+    touch "${tmpdir}/node_modules/file"
+    touch "${tmpdir}/file"
 
     # when
     run ${TEST_COMMAND} -f "${tmpdir}"
 
     # then
     [ "${status}" -eq 0 ]
-    test_output 3
-    test_files "${tmpdir}" 2
-
-    # cleanup
-    rm -rf "${tmpdir}"
+    count_output 1
+    count_files 1
+    [ ! -e "${tmpdir}/node_modules" ]
+    [ -f "${tmpdir}/file" ]
 }
 
 @test 'Not deleting files (dry run)' {
     # given
-    tmpdir="$(mktemp -d)"
     mkdir "${tmpdir}/node_modules"
-    mkdir "${tmpdir}/foo"
+    touch "${tmpdir}/.DS_Store"
+    mkdir "${tmpdir}/dir"
+    touch "${tmpdir}/file"
 
     # when
     run ${TEST_COMMAND} "${tmpdir}" --dry-run
 
     # then
     [ "${status}" -eq 0 ]
-    test_output 1
-    test_files "${tmpdir}" 2
+    count_output 2
+    count_files 4
+    [ -d "${tmpdir}/node_modules" ]
+    [ -f "${tmpdir}/.DS_Store" ]
+    [ -d "${tmpdir}/dir" ]
+    [ -f "${tmpdir}/file" ]
 
     # when
     run ${TEST_COMMAND} -n "${tmpdir}"
 
     # then
     [ "${status}" -eq 0 ]
-    test_output 1
-    test_files "${tmpdir}" 2
-
-    # cleanup
-    rm -rf "${tmpdir}"
-}
-
-@test 'Not deleting files (interactive - no)' {
-    # given
-    tmpdir="$(mktemp -d)"
-    mkdir "${tmpdir}/node_modules"
-    mkdir "${tmpdir}/foo"
-
-    workdir="$(mktemp -d)"
-    no_file="${workdir}/yes"
-    mkfifo "${no_file}"
-    yes n >"${no_file}" &
-
-    # when
-    run ${TEST_COMMAND} "${tmpdir}" --interactive <"${no_file}"
-
-    # then
-    [ "${status}" -eq 0 ]
-    test_output 1
-    test_files "${tmpdir}" 2
-
-    # cleanup
-    rm -rf "${tmpdir}"
-}
-
-@test 'Deleting junk files (interactive)' {
-    # given
-    tmpdir="$(mktemp -d)"
-    touch "${tmpdir}/.DS_Store"
-    mkdir "${tmpdir}/node_modules"
-
-    workdir="$(mktemp -d)"
-    yes_file="${workdir}/yes"
-    mkfifo "${yes_file}"
-    yes y >"${yes_file}" &
-
-    # when
-    run ${TEST_COMMAND} -i "${tmpdir}" <"${yes_file}"
-
-    # then
-    [ "${status}" -eq 0 ]
-    test_output 2
-    test_files "${tmpdir}" 0
-
-    # cleanup
-    rm -rf "${tmpdir}"
+    count_output 2
+    count_files 4
+    [ -d "${tmpdir}/node_modules" ]
+    [ -f "${tmpdir}/.DS_Store" ]
+    [ -d "${tmpdir}/dir" ]
+    [ -f "${tmpdir}/file" ]
 }
 
 @test 'Not looking into nested junk directories' {
     # given
-    tmpdir="$(mktemp -d)"
     mkdir "${tmpdir}/node_modules"
     mkdir "${tmpdir}/node_modules/node_modules"
 
@@ -188,54 +97,35 @@ function setup() {
 
     # then
     [ "${status}" -eq 0 ]
-    test_output 1
-    test_files "${tmpdir}" 1
+    count_output 1
+    count_files 1
+    [ -d "${tmpdir}/node_modules" ]
 
     # when
     run ${TEST_COMMAND} "${tmpdir}" --force
 
     # then
     [ "${status}" -eq 0 ]
-    test_output 1
-    test_files "${tmpdir}" 0
-
-    # cleanup
-    rm -rf "${tmpdir}"
-}
-
-@test 'Deleting nested trees' {
-    # given
-    tmpdir="$(mktemp -d)"
-    mkdir "${tmpdir}/node_modules"
-    touch "${tmpdir}/node_modules/.DS_Store"
-    mkdir "${tmpdir}/node_modules/node_modules"
-    mkdir "${tmpdir}/node_modules/venv"
-    touch "${tmpdir}/node_modules/venv/.DS_Store"
-
-    # when
-    run ${TEST_COMMAND} -f "${tmpdir}"
-
-    # then
-    [ "${status}" -eq 0 ]
-    test_output 1
-    test_files "${tmpdir}" 0
-
-    # cleanup
-    rm -rf "${tmpdir}"
+    count_output 1
+    count_files 0
+    [ ! -e "${tmpdir}/node_modules" ]
 }
 
 @test 'Deleting input files' {
     # given
     tmpdir="$(mktemp -d)"
     touch "${tmpdir}/.DS_Store"
+    mkdir "${tmpdir}/node_modules"
 
     # when
     run ${TEST_COMMAND} -f "${tmpdir}/.DS_Store"
 
     # then
     [ "${status}" -eq 0 ]
-    test_output 1
-    test_files "${tmpdir}" 0
+    count_output 1
+    count_files 1
+    [ ! -e "${tmpdir}/.DS_Store" ]
+    [ -d "${tmpdir}/node_modules" ]
 
     # cleanup
     rm -rf "${tmpdir}"
@@ -243,44 +133,44 @@ function setup() {
 
 @test 'Not deleting root directory' {
     # given
-    tmpdir="$(mktemp -d)"
     mkdir "${tmpdir}/node_modules"
+    touch "${tmpdir}/node_modules/.DS_Store"
 
     # when
     run ${TEST_COMMAND} -f "${tmpdir}/node_modules"
 
     # then
     [ "${status}" -eq 0 ]
-    test_output 1
-    test_files "${tmpdir}" 0
-
-    # cleanup
-    rm -rf "${tmpdir}"
+    count_output 1
+    count_files 1
+    [ -d "${tmpdir}/node_modules" ]
+    [ ! -e "${tmpdir}/node_modules/.DS_Store" ]
 }
 
 @test 'Deleting in multiple directories' {
     # given
-    tmpdir="$(mktemp -d)"
-    touch "${tmpdir}/.DS_Store"
-    tmpdir2="$(mktemp -d)"
-    mkdir "${tmpdir2}/node_modules"
+    mkdir "${tmpdir}/dir1"
+    mkdir "${tmpdir}/dir2"
+    touch "${tmpdir}/dir1/.DS_Store"
+    mkdir "${tmpdir}/dir1/node_modules"
+    mkdir "${tmpdir}/dir2/venv"
 
     # when
-    run ${TEST_COMMAND} -f "${tmpdir}" "${tmpdir2}"
+    run ${TEST_COMMAND} -f "${tmpdir}/dir1" "${tmpdir}/dir2"
 
     # then
     [ "${status}" -eq 0 ]
-    test_output 2
-    test_files "${tmpdir}" 0
-    test_files "${tmpdir2}" 0
-
-    # cleanup
-    rm -rf "${tmpdir}" "${tmpdir2}"
+    count_output 3
+    count_files 2
+    [ -d "${tmpdir}/dir1" ]
+    [ -d "${tmpdir}/dir2" ]
+    [ ! -e "${tmpdir}/dir1/.DS_Store" ]
+    [ ! -e "${tmpdir}/dir1/node_modules" ]
+    [ ! -e "${tmpdir}/dir2/venv" ]
 }
 
 @test 'Not deleting inside vcs folders' {
     # given
-    tmpdir="$(mktemp -d)"
     mkdir "${tmpdir}/.git"
     touch "${tmpdir}/.git/.DS_Store"
 
@@ -289,10 +179,8 @@ function setup() {
 
     # then
     [ "${status}" -eq 0 ]
-    test_output 0
-    test_files "${tmpdir}" 1
+    count_output 0
+    count_files 1
+    [ -d "${tmpdir}/.git" ]
     [ -f "${tmpdir}/.git/.DS_Store" ]
-
-    # cleanup
-    rm -rf "${tmpdir}"
 }
