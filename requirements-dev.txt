@@ -5,8 +5,8 @@ PyInstaller
 pytest
 
 # code quality
-pylint
-# pycodestyle
+pylint==2.5.3
+pycodestyle==2.6.0
 # autopep8
 # flake8
 # yapf

@@ -34,7 +34,10 @@ bootstrap:
 
 .PHONY: lint
 lint:
-	# TODO: lint tasks
+	if $(ACTIVATE_VENV); then \
+		pylint cleardir/main.py && \
+		pycodestyle cleardir/main.py \
+	;else exit 1; fi
 
 .PHONY: build
 build:
