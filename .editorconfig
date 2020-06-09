@@ -2,7 +2,7 @@ root = true
 
 ### UNIVERSAL RULES ###
 
-# General
+# General default settings
 [*]
 charset = utf-8
 end_of_line = lf
@@ -13,7 +13,8 @@ trim_trailing_whitespace = true
 # max_line_length - probably better to leave to language specific tools
 
 # Ignore binaries
-[{*.{so,pdb,dylib,dll,cache,a},*.{zip,7z,gz,xz}}]
+# TODO: maybe this is not necessary, check if eclint ignores binaries by default
+[{*.{so,pdb,dylib,dll,cache,a},*.{zip,7z,gz,xz},*.{jpg,jpeg,png,gif}}]
 charset = unset
 end_of_line = unset
 indent_size = unset
@@ -21,25 +22,29 @@ indent_style = unset
 insert_final_newline = unset
 trim_trailing_whitespace = unset
 
-# files to keep directories in git, must be totally empty
-[{.{keep,empty},.{git,hg}{keep,empty}}]
+# files to keep directories in version systems, usually empty
+[*.{,git,hg}{keep,empty}]
 insert_final_newline = false
 
 # Makefiles must be indented using tabs
-[{Makefile,{GNU,BSD}Makefile,*.make}]
+[{*{,GNU,BSD}{makefile,Makefile},*.make,*{,Root}Makeppfile}]
 indent_style = tab
 
 # Trailing whitespace is generally permitted in markdown
-# But it is rarely used and can introduce unwanted whitespace if enabled
+# But it is rarely used by me, and I prefer trimming such whitespace regardless
 # [*.md]
 # trim_trailing_whitespace = false
 
 # Most documentation formats prefer 2 spaces per indent level
-[{*.{yml,yaml},*.{xml,html,svg,xlf},*.{md,mdown,markdown},*.{css,scss,sass,less}}]
+[{*.{yml,yaml},*.{xml,html,htm,svg,xlf},*.{md,mdown,markdown},*.{css,scss,sass,less}}]
+indent_size = 2
+
+# All jsons
+[{*.{json,json5},*.{remark,htmllint,htmlhint,eslint,babel}rc}]
 indent_size = 2
 
 # C-style languages multiline comments
-[{*.{c,h,m,cpp,hpp,cc,hh,mm,C,H,M,cxx,hxx,c++,h++},*.swift,*.{js,jsx,ts,tsx},*.{php,php5,php7},*.{java,scala,sc,kt,ktm,kts},*.{cs,csx,fs,fsx}}]
+[{*.{c,h}{,pp,xx,++},*.{m,cc,hh,mm,C,H,M},*.swift,*.{js,ts}{,x},*.php{,4,5,7},*.{java,scala,sc,kt,ktm,kts},*.{cs,fs}{,x}}]
 block_comment = *
 block_comment_end = */
 block_comment_start = /*
@@ -48,7 +53,7 @@ block_comment_start = /*
 
 # Indent Gemfile using 2 spaces
 # TODO: check if bug (3 spaces indent at end of Gemfile.lock) is fixed
-[{Gemfile,Gemfile.lock}]
+[*{Gemfile,Gemfile.lock}]
 indent_size = 2
 
 ### .NET ecosystem ###
