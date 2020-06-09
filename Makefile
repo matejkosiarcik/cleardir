@@ -16,9 +16,6 @@ unit: bootstrap lint test
 
 .PHONY: bootstrap
 bootstrap:
-	if [ "$$(uname -s)" = Darwin ] && command -v brew >/dev/null 2>&1; then \
-		brew bundle \
-	;fi
 	# check if virtual environment exists or create it
 	[ -n "$${VIRTUAL_ENV+x}" ] || [ -d venv ] \
 		|| python3 -m venv venv \
@@ -27,8 +24,8 @@ bootstrap:
 		|| mkvirtualenv venv
 	# install dependencies into existing or created virtual environment
 	if $(ACTIVATE_VENV); then \
-		python -m pip install --upgrade pip setuptools wheel \
-		&& python -m pip install --requirement requirements-dev.txt \
+		python -m pip install --upgrade pip setuptools wheel && \
+		python -m pip install --requirement requirements-dev.txt \
 	;else exit 1; fi
 	npm install --prefix tests-cli
 
@@ -84,7 +81,7 @@ system-test:
 
 .PHONY: install
 install:
-	# TODO: replace with setup.py
-	rm -f "$(DESTDIR)/cleardir"
+	printf 'Prefer installing with pip! Only for development.\n'
+	rm -rf "$(DESTDIR)/cleardir"
 	cp "$(CURDIR)/cleardir/main.py" "$(DESTDIR)/cleardir"
 	chmod +x "$(DESTDIR)/cleardir"

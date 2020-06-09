@@ -1,8 +1,8 @@
 # native executable conversion
-PyInstaller
+PyInstaller==3.6
 
 # testing
-pytest
+pytest==5.4.3
 
 # code quality
 pylint==2.5.3
