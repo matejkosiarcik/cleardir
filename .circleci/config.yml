@@ -29,10 +29,9 @@ workflows:
       - azlint
       - debian: { matrix: { parameters: { base: [ ubuntu ], tag: [ latest, rolling, "16.04", "18.04", "20.04" ] }}}
       - debian: { matrix: { parameters: { base: [ debian ], tag: [ latest, stable, stable-slim, oldstable, oldstable-slim ] }}}
-      - debian: { matrix: { parameters: { base: [ elementary/docker ], tag: [ stable ] }}}
       - alpine: { matrix: { parameters: { tag: [ latest, edge, "3.11", "3.10" ] }}}
       - fedora: { tag: latest }
-      - python3: { matrix: { parameters: { tag: [ rc, "3", "3.8", "3.7", "3.6", "3.5", "3.4" ] }}}
+      - python3: { matrix: { parameters: { tag: [ latest, rc, "3", "3.8", "3.7", "3.6", "3.5", "3.4" ] }}}
 
 jobs:
   azlint:
