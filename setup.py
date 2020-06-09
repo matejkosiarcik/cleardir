@@ -31,7 +31,7 @@ setup(
 
     # TODO: check on python 2.6, 2.7
     # TODO: check other python 3 versions
-    python_requires='>=3, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4',
+    python_requires='>=3, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4',
     requires=[],
 
     classifiers=[
