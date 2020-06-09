@@ -18,10 +18,12 @@ import enum
 
 log = logging.getLogger('main')
 
+
 class Mode(enum.Enum):
-    DRY_RUN = 0,
-    FORCE = 1,
+    DRY_RUN = 0
+    FORCE = 1
     INTERACTIVE = 2
+
 
 # Main function
 def main(argv: Optional[List[str]]) -> int:
@@ -84,9 +86,9 @@ def main(argv: Optional[List[str]]) -> int:
 # Process single directory
 def process_directory(directory: str, mode: Mode):
     if not os.path.exists(directory):
-        log.info('Could not find %s' % directory)
+        log.info('Could not find %s', directory)
         return
-    log.info('Processing %s' % directory)
+    log.info('Processing %s', directory)
 
     if os.path.isdir(os.path.realpath(directory)):
         # TODO: call dot_clean if not dry_run
@@ -101,16 +103,16 @@ def process_directory(directory: str, mode: Mode):
             except FileNotFoundError:
                 pass
         elif mode == Mode.INTERACTIVE:
-            user_input = input('Remove %s? [y|n]: ' % file)
+            user_input = input('Remove %s? [y|n]: ', file)
             while not user_input.lower() in ['y', 'n']:
-                user_input = input('Not recognized. Remove %s? [y|n]: ' % file)
+                user_input = input('Not recognized. Remove %s? [y|n]: ', file)
             if user_input.lower() == 'y':
                 try:
                     delete(file)
                 except FileNotFoundError:
                     pass
 
-    log.info('Processed %s' % directory)
+    log.info('Processed %s', directory)
 
 
 # deletes file(or folder/symlink) from filesystem
@@ -125,7 +127,7 @@ def delete(file: str):
         raise FileNotFoundError('file "%s" not exists' % file)
 
 
-def find_files(dir: str) -> Iterable[str]:
+def find_files(directory: str) -> Iterable[str]:
     def find_command() -> Iterable[str]:
         # returns generic list of files to add to "find" command
         delete_files = [
@@ -166,10 +168,10 @@ def find_files(dir: str) -> Iterable[str]:
         ignored_folders2 = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
         ignored_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders2)
 
-        return ['find', dir, '-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
+        return ['find', directory, '-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
 
     command = find_command()
-    log.debug('Executing: %s' % ' '.join(command))
+    log.debug('Executing: %s', ' '.join(command))
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
     for line in process.stdout:
         file = str(line.decode('utf-8').strip())
