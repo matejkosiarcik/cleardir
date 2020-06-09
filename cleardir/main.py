@@ -103,9 +103,11 @@ def process_directory(directory: str, mode: Mode):
             except FileNotFoundError:
                 pass
         elif mode == Mode.INTERACTIVE:
-            user_input = input('Remove %s? [y|n]: ', file)
+            user_input = input('Remove {}? [y|n]: '.format(file))
+            print()
             while not user_input.lower() in ['y', 'n']:
-                user_input = input('Not recognized. Remove %s? [y|n]: ', file)
+                user_input = input('Not recognized. Remove {}? [y|n]: '.format(file))
+                print()
             if user_input.lower() == 'y':
                 try:
                     delete(file)
