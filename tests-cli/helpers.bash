@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
 # test the number of files left in DIR is N
-function test_files() {
-    [ "$(ls -A "${1}" | wc -l)" -eq "${2}" ]
+function count_files() {
+    [ "$(ls -A "${tmpdir}" | wc -l)" -eq "${1}" ]
 }
 
 # test output contains N number of "remove `file`" lines
-function test_output() {
+function count_output() {
     [ "$(grep -iE 'remov((ed?)|(ing))' <<<"${output}" | wc -l)" -eq "${1}" ]
 }

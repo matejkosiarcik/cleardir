@@ -1,5 +1,5 @@
 Brewfile.*
-src/*.c
+cleardir/*.c
 /*.c
 
 # Created by https://www.gitignore.io/api/node,python,pydev,venv,virtualenv,c,c++,executable,jetbrains+all,visualstudiocode,sublimetext,emacs,vim,macos,linux,windows

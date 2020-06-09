@@ -1,3 +1,0 @@
-# compatibility with python2
-# TODO: only install on python2
-strip-hints

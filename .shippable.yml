@@ -1,19 +1,17 @@
 language: python
 
+# for some reason some versions can't boot
 python:
   # - "3.8"
   - "3.7"
   # - "3.6"
   - "3.5"
   # - "3.4"
-  # - "3.3"
-  # - "3.2"
   - pypy3
 
 build:
   pre_ci:
     - apt-get update --yes
-    - apt-get install --yes build-essential upx
   ci:
     - make unit
     - make install DESTDIR="${HOME}"

@@ -11,20 +11,25 @@ import os
 import subprocess
 import shutil
 import functools
-from typing import List, Iterable
+from typing import List, Iterable, Optional
 import logging
 import itertools
 import enum
 
 log = logging.getLogger('main')
 
+
 class Mode(enum.Enum):
-    DRY_RUN = 0,
-    FORCE = 1,
+    DRY_RUN = 0
+    FORCE = 1
     INTERACTIVE = 2
 
+
 # Main function
-def main(argv: List[str]) -> int:
+def main(argv: Optional[List[str]]) -> int:
+    if argv is None:
+        argv = sys.argv[1:]
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-n', '--dry-run', action='store_true',
                         help='do not remove files, only print what would be deleted')
@@ -81,9 +86,9 @@ def main(argv: List[str]) -> int:
 # Process single directory
 def process_directory(directory: str, mode: Mode):
     if not os.path.exists(directory):
-        log.info('Could not find %s' % directory)
+        log.info('Could not find %s', directory)
         return
-    log.info('Processing %s' % directory)
+    log.info('Processing %s', directory)
 
     if os.path.isdir(os.path.realpath(directory)):
         # TODO: call dot_clean if not dry_run
@@ -91,38 +96,44 @@ def process_directory(directory: str, mode: Mode):
 
     for file in find_files(directory):
         if mode == Mode.DRY_RUN:
-            print('Would remove %s' % file)
+            print('Would remove {}'.format(file))
         elif mode == Mode.FORCE:
             try:
                 delete(file)
             except FileNotFoundError:
                 pass
         elif mode == Mode.INTERACTIVE:
-            user_input = input('Remove %s? [y|n]: ' % file)
+            user_input = input('Remove {}? [y|n]: '.format(file))
+            print()
             while not user_input.lower() in ['y', 'n']:
-                user_input = input('Not recognized. Remove %s? [y|n]: ' % file)
+                user_input = input('Not recognized. Remove {}? [y|n]: '.format(file))
+                print()
             if user_input.lower() == 'y':
                 try:
                     delete(file)
                 except FileNotFoundError:
                     pass
 
-    log.info('Processed %s' % directory)
+    log.info('Processed %s', directory)
 
 
 # deletes file(or folder/symlink) from filesystem
 def delete(file: str):
-    print('Removing %s' % file)
+    print('Removing {}'.format(file))
     path = os.path.realpath(file)
     if os.path.isdir(path):
         shutil.rmtree(file)
     elif os.path.isfile(path):
         os.remove(file)
     else:
-        raise FileNotFoundError('file "%s" not exists' % file)
+        raise FileNotFoundError('file {} not exists'.format(file))
 
 
-def find_files(dir: str) -> Iterable[str]:
+def find_files(directory: str) -> Iterable[str]:
+    depth_args = []
+    if os.path.isdir(os.path.realpath(directory)):
+        depth_args = ['-mindepth', '1']
+
     def find_command() -> Iterable[str]:
         # returns generic list of files to add to "find" command
         delete_files = [
@@ -163,10 +174,10 @@ def find_files(dir: str) -> Iterable[str]:
         ignored_folders2 = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
         ignored_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders2)
 
-        return ['find', dir, '-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
+        return ['find', directory] + depth_args + ['-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
 
     command = find_command()
-    log.debug('Executing: %s' % ' '.join(command))
+    log.debug('Executing: %s', ' '.join(command))
     process = subprocess.Popen(command, stdout=subprocess.PIPE)
     for line in process.stdout:
         file = str(line.decode('utf-8').strip())

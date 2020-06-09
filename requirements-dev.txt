@@ -1,13 +1,17 @@
 # native executable conversion
-PyInstaller
+PyInstaller==3.6
 
 # testing
-pytest
+pytest==5.4.3
 
 # code quality
-pylint
-# pycodestyle
+pylint==2.5.3
+pycodestyle==2.6.0
 # autopep8
 # flake8
 # yapf
 # black
+
+# TODO: check these
+# py-bakwards
+# strip-hints
