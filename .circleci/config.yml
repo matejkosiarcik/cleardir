@@ -56,6 +56,7 @@ jobs:
       - run: apt-get install --yes build-essential curl python3 python3-pip python3-venv python3-setuptools upx
       - run: curl -sL https://deb.nodesource.com/setup_13.x | bash - && apt-get install --yes nodejs
       - main
+
   alpine:
     parameters:
       tag:
@@ -66,6 +67,7 @@ jobs:
       - prepare
       - run: apk add --no-cache alpine-sdk bash nodejs npm python3 python3-dev py3-virtualenv upx
       - unit # TODO: build on alpine
+
   fedora:
     parameters:
       tag:
@@ -77,6 +79,7 @@ jobs:
       - run: dnf install -y gcc-c++ make findutils python3 python3-pip python3-setuptools sudo upx
       - run: curl -sL https://rpm.nodesource.com/setup_13.x | sudo -E bash - && dnf install -y nodejs
       - main
+
   python3:
     parameters:
       tag:
@@ -86,5 +89,5 @@ jobs:
     steps:
       - prepare
       - run: apt-get install --yes build-essential curl
-      - run: curl -sL https://deb.nodesource.com/setup_13.x | bash - && apt-get install --yes nodejs
+      - run: curl -sL https://deb.nodesource.com/setup_14.x | bash - && apt-get install --yes nodejs
       - unit
