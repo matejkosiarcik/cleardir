@@ -130,6 +130,11 @@ def delete(file: str):
 
 
 def find_files(directory: str) -> Iterable[str]:
+    # TODO: replace external `find` command with
+    # https://stackoverflow.com/questions/19859840/excluding-directories-in-os-walk
+    # https://docs.python.org/3/library/os.html
+    # https://www.reddit.com/r/learnpython/comments/6yzgpm/osscandir_vs_oswalk_any_benefitdifference_of/
+
     depth_args = []
     if os.path.isdir(os.path.realpath(directory)):
         depth_args = ['-mindepth', '1']
