@@ -29,7 +29,7 @@ function teardown() {
     grep -i 'usage: cleardir' <<<"${output}"
 }
 
-@test 'Running without -f/-n/-i' {
+@test 'Running without mode' {
     run ${TEST_COMMAND}
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
@@ -53,6 +53,16 @@ function teardown() {
     [ "${output}" != '' ]
 
     run ${TEST_COMMAND} --interactive --dry-run
+    [ "${status}" -ne 0 ]
+    [ "${output}" != '' ]
+}
+
+@test 'Unknown arguments' {
+    run ${TEST_COMMAND} --foo
+    [ "${status}" -ne 0 ]
+    [ "${output}" != '' ]
+
+    run ${TEST_COMMAND} -x
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 }
