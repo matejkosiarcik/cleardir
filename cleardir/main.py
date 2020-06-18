@@ -50,12 +50,12 @@ def main(argv: Optional[List[str]]) -> int:
     #     return 1
 
     mode = None
-    if args.dry_run:
-        mode = Mode.DRY_RUN
-    elif args.force:
+    if args.force:
         mode = Mode.FORCE
     elif args.interactive:
         mode = Mode.INTERACTIVE
+    elif args.dry_run:
+        mode = Mode.DRY_RUN
 
     if mode is None:
         print('Must pass either of --dry-run/--interactive/--force', file=sys.stderr)
