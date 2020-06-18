@@ -14,15 +14,8 @@ import functools
 from typing import List, Iterable, Optional
 import logging
 import itertools
-import enum
 
 log = logging.getLogger('main')
-
-
-class Mode(enum.Enum):
-    DRY_RUN = 0
-    FORCE = 1
-    INTERACTIVE = 2
 
 
 # Main function
@@ -49,20 +42,14 @@ def main(argv: Optional[List[str]]) -> int:
     #     print('Can\'t accept both "quiet" and "verbose" flags.', file=sys.stderr)
     #     return 1
 
-    mode = None
-    if args.force:
-        mode = Mode.FORCE
-    elif args.interactive:
-        mode = Mode.INTERACTIVE
-    elif args.dry_run:
-        mode = Mode.DRY_RUN
+    mode_interactive = args.interactive
+    mode_force = (args.force or args.interactive) and not args.dry_run
 
-    if mode is None:
+    if args.dry_run is args.force is args.interactive is False:
         print('Must pass either of --dry-run/--interactive/--force', file=sys.stderr)
         sys.exit(1)
-
-    if sum(1 if x else 0 for x in [args.dry_run, args.force, args.interactive]) > 1:
-        print('--dry-run/--interactive/--force are mutually exclusive', file=sys.stderr)
+    if args.dry_run is args.force is True:
+        print('--dry-run/--force are mutually exclusive', file=sys.stderr)
         sys.exit(1)
 
     # setup logging
@@ -76,15 +63,15 @@ def main(argv: Optional[List[str]]) -> int:
         log.info('No directory given. Using "."')
         directories = ['.']
     directories = [x for x in directories if len(x) > 0]
-    assert len(directories) > 0
+    assert directories
 
     for directory in directories:
-        process_directory(directory, mode)
+        process_directory(directory, mode_force, mode_interactive)
     return 0
 
 
 # Process single directory
-def process_directory(directory: str, mode: Mode):
+def process_directory(directory: str, is_real_delete: bool, is_interactive: bool):
     if not os.path.exists(directory):
         log.info('Could not find %s', directory)
         return
@@ -94,25 +81,26 @@ def process_directory(directory: str, mode: Mode):
         # TODO: call dot_clean if not dry_run
         pass
 
-    for file in find_files(directory):
-        if mode == Mode.DRY_RUN:
-            print('Would remove {}'.format(file))
-        elif mode == Mode.FORCE:
+    def trydelete(file: str):
+        if is_real_delete:
             try:
                 delete(file)
             except FileNotFoundError:
                 log.error('File %s not found', file)
-        elif mode == Mode.INTERACTIVE:
+        else:
+            print('Would remove {}'.format(file))
+
+    for file in find_files(directory):
+        if is_interactive:
             user_input = input('Remove {}? [y|n]: '.format(file))
             print()
             while not user_input.lower() in ['y', 'n']:
                 user_input = input('Not recognized. Remove {}? [y|n]: '.format(file))
                 print()
             if user_input.lower() == 'y':
-                try:
-                    delete(file)
-                except FileNotFoundError:
-                    pass
+                trydelete(file)
+        else:
+            trydelete(file)
 
     log.info('Processed %s', directory)
 
