@@ -8,6 +8,11 @@ function setup() {
         printf 'TEST_COMMAND not specified\n' >&3
         exit 2
     fi
+    export tmpdir="$(mktemp -d)"
+}
+
+function teardown() {
+    rm -rf "${tmpdir}"
 }
 
 @test 'Get help' {
@@ -25,31 +30,29 @@ function setup() {
 }
 
 @test 'Running without -f/-n/-i' {
-    tmpdir="$(mktemp -d)"
-    run ${TEST_COMMAND} "${tmpdir}"
+    run ${TEST_COMMAND}
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 }
 
 @test 'Running with both -f/-n' {
-    tmpdir="$(mktemp -d)"
-    run ${TEST_COMMAND} -f -n "${tmpdir}"
+    run ${TEST_COMMAND} -f -n
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 
-    run ${TEST_COMMAND} -n -i "${tmpdir}"
+    run ${TEST_COMMAND} -n -i
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 
-    run ${TEST_COMMAND} -i -f "${tmpdir}"
+    run ${TEST_COMMAND} -i -f
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 
-    run ${TEST_COMMAND} --force -n "${tmpdir}"
+    run ${TEST_COMMAND} --force -n
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 
-    run ${TEST_COMMAND} --interactive --dry-run "${tmpdir}"
+    run ${TEST_COMMAND} --interactive --dry-run
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 }
