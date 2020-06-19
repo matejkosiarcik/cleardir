@@ -60,7 +60,7 @@ def main(argv: Optional[List[str]]) -> int:
 
     directories = args.paths
     if not directories:
-        log.info('No directory given. Using "."')
+        print('No directory given. Using cwd.', file=sys.stderr)
         directories = ['.']
     directories = [x for x in directories if len(x) > 0]
     assert directories
