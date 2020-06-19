@@ -14,7 +14,6 @@ import functools
 from typing import List, Iterable, Optional
 import logging
 import itertools
-import platform
 
 log = logging.getLogger('main')
 
@@ -78,8 +77,7 @@ def process_directory(directory: str, is_real_delete: bool, is_interactive: bool
         return
     log.info('Processing %s', directory)
 
-    # TODO: replace check to darwin with check if dot_clean exists on path
-    if os.path.isdir(os.path.realpath(directory)) and is_real_delete and platform.system() == 'Darwin':
+    if os.path.isdir(os.path.realpath(directory)) and is_real_delete and shutil.which('dot_clean'):
         log.info('Precleaning ._* files')
         subprocess.check_call(['dot_clean', '-m', directory])
 
