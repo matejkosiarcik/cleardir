@@ -40,19 +40,16 @@ function teardown() {
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 
-    run ${TEST_COMMAND} -n -i
-    [ "${status}" -ne 0 ]
-    [ "${output}" != '' ]
-
-    run ${TEST_COMMAND} -i -f
-    [ "${status}" -ne 0 ]
-    [ "${output}" != '' ]
-
     run ${TEST_COMMAND} --force -n
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 
-    run ${TEST_COMMAND} --interactive --dry-run
+    run ${TEST_COMMAND} --dry-run -f
+    [ "${status}" -ne 0 ]
+    [ "${output}" != '' ]
+
+
+    run ${TEST_COMMAND} --dry-run --force
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 }
