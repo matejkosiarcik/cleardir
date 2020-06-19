@@ -1,14 +1,15 @@
 #!/usr/bin/env bats
+# shellcheck disable=SC2086
 
 load './helpers'
 
 function setup() {
-    cd "${BATS_TEST_DIRNAME}/.."
+    cd "${BATS_TEST_DIRNAME}/.." || exit 1
     if [ -z "${TEST_COMMAND+x}" ] || [ "${TEST_COMMAND}" = '' ]; then
         printf 'TEST_COMMAND not specified\n' >&3
         exit 2
     fi
-    export tmpdir="$(mktemp -d)"
+    tmpdir="$(mktemp -d)"
 }
 
 function teardown() {
@@ -112,7 +113,6 @@ function teardown() {
 
 @test 'Deleting input files' {
     # given
-    tmpdir="$(mktemp -d)"
     touch "${tmpdir}/.DS_Store"
     mkdir "${tmpdir}/node_modules"
 
