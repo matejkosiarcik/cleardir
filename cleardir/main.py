@@ -95,7 +95,6 @@ def process_directory(directory: str, is_real_delete: bool, is_interactive: bool
             user_input = input('Remove {}? [y|n]: '.format(file))
             while not user_input.lower() in ['y', 'n']:
                 user_input = input('Not recognized. Remove {}? [y|n]: '.format(file))
-                print()
             if user_input.lower() == 'y':
                 trydelete(file)
         else:
@@ -117,65 +116,50 @@ def delete(file: str):
 
 
 def find_files(directory: str) -> Iterable[str]:
-    # TODO: replace external `find` command with
-    # https://stackoverflow.com/questions/19859840/excluding-directories-in-os-walk
-    # https://docs.python.org/3/library/os.html
-    # https://www.reddit.com/r/learnpython/comments/6yzgpm/osscandir_vs_oswalk_any_benefitdifference_of/
+    delete_files = {
+        '.DS_Store',  # macOS
+        '.AppleDouble',  # macOS
+        '.LSOverride',  # macOS
+        '.localized',  # macOS
+        'CMakeCache.txt',  # cmake
+        'Thumbs.db',  # Windows
+        'thumbs.db',  # Windows
+        'ehthumbs.db',  # Windows
+        'ehthumbs_vista.db',  # Windows
+        'desktop.ini',  # Windows
+        'Desktop.ini',  # Windows
+    }
+    delete_dirs = {
+        'dist',  # default dist folder
+        'node_modules',  # npm, yarn
+        'bower_components',  # bower
+        'build',  # generic build folder
+        '.build',  # swift package manager
+        'Pods',  # cocoapods (obj-c, swift)
+        'Carthage',  # carthage (obj-c, swift)
+        'CMakeFiles',  # cmake
+        'CMakeScripts',  # cmake
+        'venv',  # python (virtualenv, nodeenv)
+        '.venv',  # python (virtualenv, nodeenv)
+    }
+    ignored_dirs = {
+        '.git',
+        '.hg',
+        '.svn',
+    }
 
-    depth_args = []
-    if os.path.isdir(os.path.realpath(directory)):
-        depth_args = ['-mindepth', '1']
+    # check if input directory is actually a file
+    if os.path.isfile(os.path.realpath(directory)):
+        if os.path.basename(directory) in delete_files:
+            yield directory
+        return
 
-    def find_command() -> Iterable[str]:
-        # returns generic list of files to add to "find" command
-        delete_files = [
-            '.DS_Store',  # macOS
-            '.AppleDouble',  # macOS
-            '.LSOverride',  # macOS
-            '.localized',  # macOS
-            'CMakeCache.txt',  # cmake
-            '._*',  # dotbar macos/BSD files
-            '[T|t]humbs.db',  # Windows
-            'ehthumbs.db',  # Windows
-            'ehthumbs_vista.db',  # Windows
-            '[D|d]esktop.ini',  # Windows
-        ]
-        delete_files2 = (['-name', x, '-type', 'f'] for x in delete_files)
-        delete_folders = [
-            'dist',  # default dist folder
-            'node_modules',  # npm, yarn
-            'bower_components',  # bower
-            'build',  # generic build folder
-            '.build',  # swift package manager
-            'Pods',  # cocoapods (obj-c, swift)
-            'Carthage',  # carthage (obj-c, swift)
-            'CMakeFiles',  # cmake
-            'CMakeScripts',  # cmake
-            'venv',  # python (virtualenv, pyenv)
-            '.venv',  # python (virtualenv, pyenv)
-        ]
-        # TODO: consider .Trash, .Trashes, .Trash-*
-        delete_folders2 = (['-name', x, '-type', 'd', '-prune'] for x in delete_folders)
-        delete_all = functools.reduce(lambda all, el: all + ['-or'] + el, itertools.chain(delete_folders2, delete_files2))
-
-        ignored_folders = [
-            '.git',
-            '.hg',
-            '.svn',
-        ]
-        ignored_folders2 = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
-        ignored_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders2)
-
-        return ['find', directory] + depth_args + ['-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
-
-    command = find_command()
-    log.debug('Executing: %s', ' '.join(command))
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    for line in process.stdout:
-        file = str(line.decode('utf-8').strip())
-        yield file
-    process.communicate()
-
+    for root, dirs, files in os.walk(directory, topdown=True):
+        for file2 in filter(lambda f: f in delete_files or f.startswith('._'), files):
+            yield os.path.join(root, file2)
+        for dir2 in filter(lambda d: d in delete_dirs, dirs):
+            yield os.path.join(root, dir2)
+        dirs[:] = [d for d in dirs if d not in delete_dirs and d not in ignored_dirs]
 
 if __name__ == "__main__":
     main(sys.argv[1:])
