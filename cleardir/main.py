@@ -10,10 +10,8 @@ import sys
 import os
 import subprocess
 import shutil
-import functools
 from typing import List, Iterable, Optional
 import logging
-import itertools
 
 log = logging.getLogger('main')
 
@@ -160,6 +158,7 @@ def find_files(directory: str) -> Iterable[str]:
         for dir2 in filter(lambda d: d in delete_dirs, dirs):
             yield os.path.join(root, dir2)
         dirs[:] = [d for d in dirs if d not in delete_dirs and d not in ignored_dirs]
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
