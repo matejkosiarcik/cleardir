@@ -93,7 +93,6 @@ def process_directory(directory: str, is_real_delete: bool, is_interactive: bool
     for file in find_files(directory):
         if is_interactive:
             user_input = input('Remove {}? [y|n]: '.format(file))
-            print()
             while not user_input.lower() in ['y', 'n']:
                 user_input = input('Not recognized. Remove {}? [y|n]: '.format(file))
                 print()
