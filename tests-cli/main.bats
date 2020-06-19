@@ -1,7 +1,6 @@
 #!/usr/bin/env bats
 
 load './helpers'
-# TODO: simplify file checking with bats libraries (bats-file/bats-support/bats-assert)
 
 function setup() {
     cd "${BATS_TEST_DIRNAME}/.."
