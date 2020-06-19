@@ -59,7 +59,7 @@ def main(argv: Optional[List[str]]) -> int:
     log.addHandler(logging.StreamHandler())  # stderr
 
     directories = args.paths
-    if directories is None:
+    if not directories:
         log.info('No directory given. Using "."')
         directories = ['.']
     directories = [x for x in directories if len(x) > 0]
