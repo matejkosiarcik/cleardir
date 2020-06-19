@@ -6,8 +6,8 @@
 
 - [About](#about)
 - [Installation](#installation)
-  * [Via package manager](#via-package-manager)
-  * [Manually](#manually)
+  - [Via package manager](#via-package-manager)
+  - [Manually](#manually)
 - [Usage](#usage)
 - [Current milestones](#current-milestones)
 
