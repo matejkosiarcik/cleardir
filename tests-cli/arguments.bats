@@ -10,6 +10,7 @@ function setup() {
         exit 2
     fi
     tmpdir="$(mktemp -d)"
+    export tmpdir
 }
 
 function teardown() {
