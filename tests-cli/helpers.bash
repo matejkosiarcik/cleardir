@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
 # test the number of files left in DIR is N
-function count_files() {
-    [ "$(ls -A "${tmpdir}" | wc -l)" -eq "${1}" ]
+count_files() {
+    # shellcheck disable=SC2154
+    [ "$(find "${tmpdir}" -mindepth 1 -maxdepth 1 -print0 | tr -cd '\0' | wc -c)" -eq "${1}" ]
 }
 
 # test output contains N number of "remove `file`" lines
-function count_output() {
-    [ "$(grep -iE 'remov((ed?)|(ing))' <<<"${output}" | wc -l)" -eq "${1}" ]
+count_output() {
+    # shellcheck disable=SC2154
+    [ "$(grep -iEc 'remov((ed?)|(ing))' <<<"${output}")" -eq "${1}" ]
 }

@@ -27,9 +27,9 @@ workflows:
   test:
     jobs:
       - azlint
-      - debian: { matrix: { parameters: { base: [ ubuntu ], tag: [ latest, rolling, "16.04", "18.04", "20.04" ] }}}
-      - debian: { matrix: { parameters: { base: [ debian ], tag: [ latest, stable, stable-slim, oldstable, oldstable-slim ] }}}
-      - alpine: { matrix: { parameters: { tag: [ latest, edge, "3.11", "3.10" ] }}}
+      - debian: { matrix: { parameters: { base: [ ubuntu ], tag: [ latest, rolling ] }}}
+      - debian: { matrix: { parameters: { base: [ debian ], tag: [ latest, stable, stable-slim ] }}}
+      - alpine: { matrix: { parameters: { tag: [ latest, edge ] }}}
       - fedora: { tag: latest }
       - python3: { matrix: { parameters: { tag: [ rc, "3", "3.8", "3.7", "3.6", "3.5" ] }}}
 
@@ -40,7 +40,7 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: azlint || true  # TODO: reenable
+      - run: azlint
 
   debian:
     parameters:
@@ -65,7 +65,7 @@ jobs:
     steps:
       - prepare
       - run: apk add --no-cache alpine-sdk bash nodejs npm python3 python3-dev py3-virtualenv upx
-      - unit # TODO: build on alpine
+      - unit  # TODO: build on alpine
 
   fedora:
     parameters:

@@ -6,8 +6,8 @@
 
 - [About](#about)
 - [Installation](#installation)
-  * [Via package manager](#via-package-manager)
-  * [Manually](#manually)
+  - [Via package manager](#via-package-manager)
+  - [Manually](#manually)
 - [Usage](#usage)
 - [Current milestones](#current-milestones)
 
@@ -61,5 +61,3 @@ optional arguments:
 - [ ] Improve testing (pytest)
 - [ ] Add setup.py
 - [ ] Release on pypi/brew
-- [ ] Replace shell `find` with pure python (based on `os.walkdir` or `os.scandir`, or some 3rd party library (such as `find` on pypi))
-- [ ] Use `dot_clean` where available

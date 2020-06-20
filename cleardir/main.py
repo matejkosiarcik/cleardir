@@ -10,19 +10,10 @@ import sys
 import os
 import subprocess
 import shutil
-import functools
 from typing import List, Iterable, Optional
 import logging
-import itertools
-import enum
 
 log = logging.getLogger('main')
-
-
-class Mode(enum.Enum):
-    DRY_RUN = 0
-    FORCE = 1
-    INTERACTIVE = 2
 
 
 # Main function
@@ -49,20 +40,14 @@ def main(argv: Optional[List[str]]) -> int:
     #     print('Can\'t accept both "quiet" and "verbose" flags.', file=sys.stderr)
     #     return 1
 
-    mode = None
-    if args.dry_run:
-        mode = Mode.DRY_RUN
-    elif args.force:
-        mode = Mode.FORCE
-    elif args.interactive:
-        mode = Mode.INTERACTIVE
+    mode_interactive = args.interactive
+    mode_force = (args.force or args.interactive) and not args.dry_run
 
-    if mode is None:
+    if args.dry_run is args.force is args.interactive is False:
         print('Must pass either of --dry-run/--interactive/--force', file=sys.stderr)
         sys.exit(1)
-
-    if sum(1 if x else 0 for x in [args.dry_run, args.force, args.interactive]) > 1:
-        print('--dry-run/--interactive/--force are mutually exclusive', file=sys.stderr)
+    if args.dry_run is args.force is True:
+        print('--dry-run/--force are mutually exclusive', file=sys.stderr)
         sys.exit(1)
 
     # setup logging
@@ -72,47 +57,46 @@ def main(argv: Optional[List[str]]) -> int:
     log.addHandler(logging.StreamHandler())  # stderr
 
     directories = args.paths
-    if directories is None:
-        log.info('No directory given. Using "."')
+    if not directories:
+        print('No directory given. Using cwd.', file=sys.stderr)
         directories = ['.']
     directories = [x for x in directories if len(x) > 0]
-    assert len(directories) > 0
+    assert directories
 
     for directory in directories:
-        process_directory(directory, mode)
+        process_directory(directory, mode_force, mode_interactive)
     return 0
 
 
 # Process single directory
-def process_directory(directory: str, mode: Mode):
+def process_directory(directory: str, is_real_delete: bool, is_interactive: bool):
     if not os.path.exists(directory):
         log.info('Could not find %s', directory)
         return
     log.info('Processing %s', directory)
 
-    if os.path.isdir(os.path.realpath(directory)):
-        # TODO: call dot_clean if not dry_run
-        pass
+    if os.path.isdir(os.path.realpath(directory)) and is_real_delete and shutil.which('dot_clean'):
+        log.info('Precleaning ._* files')
+        subprocess.check_call(['dot_clean', '-m', directory])
 
-    for file in find_files(directory):
-        if mode == Mode.DRY_RUN:
-            print('Would remove {}'.format(file))
-        elif mode == Mode.FORCE:
+    def trydelete(file: str):
+        if is_real_delete:
             try:
                 delete(file)
             except FileNotFoundError:
-                pass
-        elif mode == Mode.INTERACTIVE:
+                log.error('File %s not found', file)
+        else:
+            print('Would remove {}'.format(file))
+
+    for file in find_files(directory):
+        if is_interactive:
             user_input = input('Remove {}? [y|n]: '.format(file))
-            print()
             while not user_input.lower() in ['y', 'n']:
                 user_input = input('Not recognized. Remove {}? [y|n]: '.format(file))
-                print()
             if user_input.lower() == 'y':
-                try:
-                    delete(file)
-                except FileNotFoundError:
-                    pass
+                trydelete(file)
+        else:
+            trydelete(file)
 
     log.info('Processed %s', directory)
 
@@ -130,59 +114,50 @@ def delete(file: str):
 
 
 def find_files(directory: str) -> Iterable[str]:
-    depth_args = []
-    if os.path.isdir(os.path.realpath(directory)):
-        depth_args = ['-mindepth', '1']
+    delete_files = {
+        '.DS_Store',  # macOS
+        '.AppleDouble',  # macOS
+        '.LSOverride',  # macOS
+        '.localized',  # macOS
+        'CMakeCache.txt',  # cmake
+        'Thumbs.db',  # Windows
+        'thumbs.db',  # Windows
+        'ehthumbs.db',  # Windows
+        'ehthumbs_vista.db',  # Windows
+        'desktop.ini',  # Windows
+        'Desktop.ini',  # Windows
+    }
+    delete_dirs = {
+        'dist',  # default dist folder
+        'node_modules',  # npm, yarn
+        'bower_components',  # bower
+        'build',  # generic build folder
+        '.build',  # swift package manager
+        'Pods',  # cocoapods (obj-c, swift)
+        'Carthage',  # carthage (obj-c, swift)
+        'CMakeFiles',  # cmake
+        'CMakeScripts',  # cmake
+        'venv',  # python (virtualenv, nodeenv)
+        '.venv',  # python (virtualenv, nodeenv)
+    }
+    ignored_dirs = {
+        '.git',
+        '.hg',
+        '.svn',
+    }
 
-    def find_command() -> Iterable[str]:
-        # returns generic list of files to add to "find" command
-        delete_files = [
-            '.DS_Store',  # macOS
-            '.AppleDouble',  # macOS
-            '.LSOverride',  # macOS
-            '.localized',  # macOS
-            'CMakeCache.txt',  # cmake
-            '._*',  # dotbar macos/BSD files
-            '[T|t]humbs.db',  # Windows
-            'ehthumbs.db',  # Windows
-            'ehthumbs_vista.db',  # Windows
-            '[D|d]esktop.ini',  # Windows
-        ]
-        delete_files2 = (['-name', x, '-type', 'f'] for x in delete_files)
-        delete_folders = [
-            'dist',  # default dist folder
-            'node_modules',  # npm, yarn
-            'bower_components',  # bower
-            'build',  # generic build folder
-            '.build',  # swift package manager
-            'Pods',  # cocoapods (obj-c, swift)
-            'Carthage',  # carthage (obj-c, swift)
-            'CMakeFiles',  # cmake
-            'CMakeScripts',  # cmake
-            'venv',  # python (virtualenv, pyenv)
-            '.venv',  # python (virtualenv, pyenv)
-        ]
-        # TODO: consider .Trash, .Trashes, .Trash-*
-        delete_folders2 = (['-name', x, '-type', 'd', '-prune'] for x in delete_folders)
-        delete_all = functools.reduce(lambda all, el: all + ['-or'] + el, itertools.chain(delete_folders2, delete_files2))
+    # check if input directory is actually a file
+    if os.path.isfile(os.path.realpath(directory)):
+        if os.path.basename(directory) in delete_files:
+            yield directory
+        return
 
-        ignored_folders = [
-            '.git',
-            '.hg',
-            '.svn',
-        ]
-        ignored_folders2 = (['-path', "*/%s/*" % x, '-prune'] for x in ignored_folders)
-        ignored_all = functools.reduce(lambda all, el: all + ['-or'] + el, ignored_folders2)
-
-        return ['find', directory] + depth_args + ['-not', '('] + ignored_all + [')', '-and', '('] + delete_all + [')']
-
-    command = find_command()
-    log.debug('Executing: %s', ' '.join(command))
-    process = subprocess.Popen(command, stdout=subprocess.PIPE)
-    for line in process.stdout:
-        file = str(line.decode('utf-8').strip())
-        yield file
-    process.communicate()
+    for root, dirs, files in os.walk(directory, topdown=True):
+        for file2 in filter(lambda f: f in delete_files or f.startswith('._'), files):
+            yield os.path.join(root, file2)
+        for dir2 in filter(lambda d: d in delete_dirs, dirs):
+            yield os.path.join(root, dir2)
+        dirs[:] = [d for d in dirs if d not in delete_dirs and d not in ignored_dirs]
 
 
 if __name__ == "__main__":

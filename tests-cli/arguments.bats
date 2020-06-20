@@ -1,13 +1,20 @@
 #!/usr/bin/env bats
+# shellcheck disable=SC2086
 
 load './helpers'
 
 function setup() {
-    cd "${BATS_TEST_DIRNAME}/.."
+    cd "${BATS_TEST_DIRNAME}/.." || exit 1
     if [ -z "${TEST_COMMAND+x}" ] || [ "${TEST_COMMAND}" = '' ]; then
         printf 'TEST_COMMAND not specified\n' >&3
         exit 2
     fi
+    tmpdir="$(mktemp -d)"
+    export tmpdir
+}
+
+function teardown() {
+    rm -rf "${tmpdir}"
 }
 
 @test 'Get help' {
@@ -24,32 +31,37 @@ function setup() {
     grep -i 'usage: cleardir' <<<"${output}"
 }
 
-@test 'Running without -f/-n/-i' {
-    tmpdir="$(mktemp -d)"
-    run ${TEST_COMMAND} "${tmpdir}"
+@test 'Running without mode' {
+    run ${TEST_COMMAND}
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 }
 
 @test 'Running with both -f/-n' {
-    tmpdir="$(mktemp -d)"
-    run ${TEST_COMMAND} -f -n "${tmpdir}"
+    run ${TEST_COMMAND} -f -n
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 
-    run ${TEST_COMMAND} -n -i "${tmpdir}"
+    run ${TEST_COMMAND} --force -n
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 
-    run ${TEST_COMMAND} -i -f "${tmpdir}"
+    run ${TEST_COMMAND} --dry-run -f
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 
-    run ${TEST_COMMAND} --force -n "${tmpdir}"
+
+    run ${TEST_COMMAND} --dry-run --force
+    [ "${status}" -ne 0 ]
+    [ "${output}" != '' ]
+}
+
+@test 'Unknown arguments' {
+    run ${TEST_COMMAND} --foo
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 
-    run ${TEST_COMMAND} --interactive --dry-run "${tmpdir}"
+    run ${TEST_COMMAND} -x
     [ "${status}" -ne 0 ]
     [ "${output}" != '' ]
 }
