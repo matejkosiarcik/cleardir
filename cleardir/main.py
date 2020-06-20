@@ -46,10 +46,10 @@ def main(argv: Optional[List[str]]) -> int:
 
     if args.dry_run is args.force is args.interactive is False:
         print('Must pass either of --dry-run/--interactive/--force', file=sys.stderr)
-        sys.exit(1)
+        return 1
     if args.dry_run is args.force is True:
         print('--dry-run/--force are mutually exclusive', file=sys.stderr)
-        sys.exit(1)
+        return 1
 
     # setup logging
     log.setLevel(logging.WARN)
@@ -58,8 +58,10 @@ def main(argv: Optional[List[str]]) -> int:
     log.addHandler(logging.StreamHandler())  # stderr
 
     directories = args.paths
-    directories = [x for x in directories if len(x) > 0]
-    assert directories
+    directories = [os.path.realpath(x) for x in directories if len(x) > 0]
+    if not directories:
+        print('No directories given', file=sys.stderr)
+        return 1
 
     for directory in directories:
         process_directory(directory, mode_force, mode_interactive)
@@ -73,7 +75,7 @@ def process_directory(directory: str, is_real_delete: bool, is_interactive: bool
         return
     log.info('Processing %s', directory)
 
-    if os.path.isdir(os.path.realpath(directory)) and is_real_delete and shutil.which('dot_clean'):
+    if os.path.isdir(directory) and is_real_delete and shutil.which('dot_clean'):
         log.info('Precleaning ._* files')
         subprocess.check_call(['dot_clean', '-m', directory])
 
@@ -145,7 +147,7 @@ def find_files(directory: str) -> Iterable[str]:
     }
 
     # check if input directory is actually a file
-    if os.path.isfile(os.path.realpath(directory)):
+    if os.path.isfile(directory):
         if os.path.basename(directory) in delete_files:
             yield directory
         return
@@ -159,4 +161,4 @@ def find_files(directory: str) -> Iterable[str]:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    sys.exit(main(sys.argv[1:]))
