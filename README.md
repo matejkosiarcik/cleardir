@@ -9,7 +9,7 @@
   - [Via package manager](#via-package-manager)
   - [Manually](#manually)
 - [Usage](#usage)
-- [Current milestones](#current-milestones)
+- [Future milestones](#future-milestones)
 
 <!-- tocstop -->
 
@@ -35,8 +35,7 @@ Better install method based on `setup.py`/`pip` is coming soon.
 
 ## Usage
 
-For example to see what would be deleted in current directory call
-`cleardir -n .`.
+To clean current working directory interactively run `cleardir -i .`.
 
 The list of all options:
 
@@ -56,8 +55,9 @@ optional arguments:
   -v, --verbose      additional logging output
 ```
 
-## Current milestones
+## Future milestones
 
-- [ ] Improve testing (pytest)
-- [ ] Add setup.py
-- [ ] Release on pypi/brew
+- [ ] Improve testing (with pytest)
+- [ ] Finish setup.py
+- [ ] Release on pypi
+- [ ] Release on brew
