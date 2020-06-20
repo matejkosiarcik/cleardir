@@ -9,7 +9,7 @@
   - [Via package manager](#via-package-manager)
   - [Manually](#manually)
 - [Usage](#usage)
-- [Current milestones](#current-milestones)
+- [Future milestones](#future-milestones)
 
 <!-- tocstop -->
 
