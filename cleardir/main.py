@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # TODO: apply formatting and linting
 
 from __future__ import (
