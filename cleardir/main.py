@@ -30,7 +30,8 @@ def main(argv: Optional[List[str]]) -> int:
                         help='work in interactive mode (ask user for each file whether to remove it or not)')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='additional logging output')
-    parser.add_argument('paths', nargs='*', help='directories to clear (also accepts filepaths)')
+    parser.add_argument('paths', nargs='*', default=['.'],
+                        help='directories to clear (also accepts filepaths)')
     parser.prog = 'cleardir'
     # TODO: add -q/--quiet flag
     # TODO: add -V/--version flag (probably after first deployment)
@@ -57,9 +58,6 @@ def main(argv: Optional[List[str]]) -> int:
     log.addHandler(logging.StreamHandler())  # stderr
 
     directories = args.paths
-    if not directories:
-        print('No directory given. Using cwd.', file=sys.stderr)
-        directories = ['.']
     directories = [x for x in directories if len(x) > 0]
     assert directories
 
