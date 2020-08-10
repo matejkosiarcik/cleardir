@@ -1,5 +1,5 @@
 # native executable conversion
-PyInstaller==3.6
+PyInstaller==4.0
 
 # testing
 pytest==6.0.1
