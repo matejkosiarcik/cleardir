@@ -31,7 +31,7 @@ workflows:
       - debian: { matrix: { parameters: { base: [ debian ], tag: [ latest, stable, stable-slim ] }}}
       - alpine: { matrix: { parameters: { tag: [ latest, edge ] }}}
       - fedora: { tag: latest }
-      - python3: { matrix: { parameters: { tag: [ rc, "3", "3.8", "3.7", "3.6", "3.5" ] }}}
+      - python3: { matrix: { parameters: { tag: [ "3", "3.8", "3.7", "3.6", "3.5" ] }}}
 
 jobs:
   azlint:

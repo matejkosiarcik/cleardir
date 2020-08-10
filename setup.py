@@ -9,7 +9,7 @@ def read(filepath):
 
 setup(
     name='cleardir',
-    version='0.1.0', # TODO: get dynamically
+    version='0.1.0',  # TODO: get dynamically
     description='Directory cleaner from development and OS junk files',
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
