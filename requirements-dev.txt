@@ -2,7 +2,7 @@
 PyInstaller==4.0
 
 # testing
-pytest==6.0.1
+pytest==6.0.2
 
 # code quality
 pylint==2.6.0
